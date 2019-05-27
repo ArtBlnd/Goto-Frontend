@@ -7,18 +7,18 @@ namespace GTFW
 {
     int EntryPoint(int args, char** argv, char** envp)
     {
-		int ExitCode = EXIT_SUCCESS;
+        int ExitCode = EXIT_SUCCESS;
 
         CLI::CommandLineContext* CLIContext = nullptr;
-        if(!CLI::CreateCommandLineContextWith(&CLIContext, args, envp))
+        if(!CLI::CreateCommandLineContextWith(&CLIContext, args, argv, envp))
         {
-			ExitCode = EXIT_FAILURE;
-			goto EXIT;
+            ExitCode = EXIT_FAILURE;
+            goto EXIT;
         }
 
-	EXIT:
-		CLI::FreeCommandLineContext(CLIContext);
-		return ExitCode;
+    EXIT:
+        CLI::FreeCommandLineContext(CLIContext);
+        return ExitCode;
     }
 }
 
