@@ -22,7 +22,7 @@ namespace GTFW
             std::vector<KVInfo*> m_clcEnvs;
 
 
-            bool LookUp(std::string Key, std::vector<std::string>* Val = nullptr) const;
+            bool LookUpArgs(std::string Key, std::vector<std::string>* Val = nullptr) const;
         };
 
         bool CreateCommandLineContextWith(CommandLineContext** ppContext, size_t args, char** argv, char** envp);

@@ -180,6 +180,24 @@ namespace GTFW
         return true;
     }
 
+    bool CLI::CommandLineContext::LookUpArgs(std::string Key, std::vector<std::string>* Val) const
+    {
+        for (CLI::KVInfo* info : this->m_clcArgs)
+        {
+            if (info->m_Key == Key)
+            {
+                if (Val != nullptr)
+                {
+                    *Val = info->m_Val;
+                }
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     bool CLI::CreateCommandLineContextWith(CommandLineContext** ppContext, size_t args, char** argv, char** envp)
     {
         *ppContext = new CommandLineContext();
