@@ -1,5 +1,5 @@
 
-add_executable(gtfw-cpp
+add_executable(gtfw-driver
     CommandLine.cpp
     CommandLine.h
     main.cpp

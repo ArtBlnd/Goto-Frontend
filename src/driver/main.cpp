@@ -1,4 +1,4 @@
-#include "cli/CommandLine.h"
+#include "driver/CommandLine.h"
 
 #define EXIT_FAILURE 0xFFFFFFFF
 #define EXIT_SUCCESS 0x00000001
@@ -9,15 +9,15 @@ namespace GTFW
     {
         int ExitCode = EXIT_SUCCESS;
 
-        CLI::CommandLineContext* CLIContext = nullptr;
-        if(!CLI::CreateCommandLineContextWith(&CLIContext, args, argv, envp))
+        Driver::CommandLineContext* CLIContext = nullptr;
+        if(!Driver::CreateCommandLineContextWith(&CLIContext, args, argv, envp))
         {
             ExitCode = EXIT_FAILURE;
             goto EXIT;
         }
 
     EXIT:
-        CLI::FreeCommandLineContext(CLIContext);
+        Driver::FreeCommandLineContext(CLIContext);
         return ExitCode;
     }
 }

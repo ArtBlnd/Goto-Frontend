@@ -1,12 +1,12 @@
-#ifndef __GFWK_C_FRONTEND_CLI_COMMANDLINE_H__
-#define __GFWK_C_FRONTEND_CLI_COMMANDLINE_H__
+#ifndef __GFWK_C_FRONTEND_DRIVER_COMMANDLINE_H__
+#define __GFWK_C_FRONTEND_DRIVER_COMMANDLINE_H__
 
 #include <vector>
 #include <string>
 
 namespace GTFW
 {
-    namespace CLI
+    namespace Driver
     {
         struct KVInfo
         {
@@ -21,6 +21,7 @@ namespace GTFW
             std::vector<KVInfo*> m_clcArgs;
             std::vector<KVInfo*> m_clcEnvs;
 
+            std::vector<std::string> m_clcSourceFiles;
 
             bool LookUpArgs(std::string Key, std::vector<std::string>* Val = nullptr) const;
         };

@@ -1,4 +1,4 @@
-#include "cli/CommandLine.h"
+#include "driver/CommandLine.h"
 
 #include "parser/TokenVerifier.h"
 
@@ -31,9 +31,9 @@ namespace GTFW
 
     // GenerateKVWithAndClear
     //     Create new KVInfo pair with Key, Val.
-    CLI::KVInfo* GenerateKVWithAndClear(std::string& Key, std::vector<std::string>& Val)
+    Driver::KVInfo* GenerateKVWithAndClear(std::string& Key, std::vector<std::string>& Val)
     {
-        CLI::KVInfo* info = new CLI::KVInfo();
+        Driver::KVInfo* info = new Driver::KVInfo();
 
         info->m_Key = std::move(Key);
         info->m_Val = std::move(Val);
@@ -53,7 +53,7 @@ namespace GTFW
         throw std::exception(exceptionMessage.c_str());
     }
 
-    void GenerateKVInformationsFrom(const std::string& argsLine, std::vector<CLI::KVInfo*>& KVArgs)
+    void GenerateKVInformationsFrom(const std::string& argsLine, std::vector<Driver::KVInfo*>& KVArgs)
     {
         std::string              Key = "";
         std::string              Val = "";
@@ -151,16 +151,15 @@ namespace GTFW
         return Args;
     }
 
-    bool TryParseCommandLine(CLI::CommandLineContext* context, size_t args, char** argv, char** envp)
+    bool TryParseCommandLine(Driver::CommandLineContext* context, size_t args, char** argv, char** envp)
     {
-        std::vector<CLI::KVInfo*> argsInfo;
-        std::vector<CLI::KVInfo*> envsInfo;
+        std::vector<Driver::KVInfo*> argsInfo;
+        std::vector<Driver::KVInfo*> envsInfo;
 
         // Generating inlined arguments and environments.
         try 
         {
             std::string InlinedArgs = TransformArgvIntoInlinedString(argv, args);
-            std::string InlinedEnvs = "";
 
             if (InlinedArgs.empty())
             {
@@ -180,9 +179,9 @@ namespace GTFW
         return true;
     }
 
-    bool CLI::CommandLineContext::LookUpArgs(std::string Key, std::vector<std::string>* Val) const
+    bool Driver::CommandLineContext::LookUpArgs(std::string Key, std::vector<std::string>* Val) const
     {
-        for (CLI::KVInfo* info : this->m_clcArgs)
+        for (Driver::KVInfo* info : this->m_clcArgs)
         {
             if (info->m_Key == Key)
             {
@@ -198,20 +197,20 @@ namespace GTFW
         return false;
     }
 
-    bool CLI::CreateCommandLineContextWith(CommandLineContext** ppContext, size_t args, char** argv, char** envp)
+    bool Driver::CreateCommandLineContextWith(CommandLineContext** ppContext, size_t args, char** argv, char** envp)
     {
         *ppContext = new CommandLineContext();
         return TryParseCommandLine(*ppContext, args, argv, envp);
     }
 
-    void CLI::FreeCommandLineContext(CommandLineContext* pContext)
+    void Driver::FreeCommandLineContext(CommandLineContext* pContext)
     {
-        for (CLI::KVInfo* infoArgs : pContext->m_clcArgs)
+        for (Driver::KVInfo* infoArgs : pContext->m_clcArgs)
         {
             delete infoArgs;
         }
 
-        for (CLI::KVInfo* infoEnvs : pContext->m_clcEnvs)
+        for (Driver::KVInfo* infoEnvs : pContext->m_clcEnvs)
         {
             delete infoEnvs;
         }
