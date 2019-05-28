@@ -1,6 +1,7 @@
 
-macro(AddTest TestName)
-    add_executable(${TestName} ${ARGN} )
-    target_link_libraries(${TestName} gtest gtest_main)
-    add_test(${TestName} ${TestName})
+macro(AddTest TESTNAME)
+    add_executable(${TESTNAME} ${ARGN})
+    target_link_libraries(${TESTNAME} gtest gtest_main)
+    add_test(${TESTNAME} ${TESTNAME})
+    set_target_properties(${TESTNAME} PROPERTIES FOLDER tests)
 endmacro()

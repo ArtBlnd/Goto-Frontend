@@ -1,12 +1,18 @@
-set(BUILD_GTEST ON CACHE BOOL "" FORCE)
-set(BUILD_GMOCK OFF CACHE BOOL "" FORCE)
+# Test Module Initializations
 
-add_subdirectory (gtest EXCLUDE_FROM_ALL)
+set(gtest_hide_internal_symbols ON)
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+set(gtest_hide_internal_symbols ON CACHE BOOL "" FORCE)
+
+add_subdirectory(gtest/ EXCLUDE_FROM_ALL)
 enable_testing()
+
+set_target_properties(gtest PROPERTIES FOLDER test)
+set_target_properties(gtest_main PROPERTIES FOLDER test)
 
 include_directories(gtest/googletest/include)
 link_directories(gtest/lib)
 
-AddTest(DriverTest
-    Driver/CLIParserTest.cpp
-)
+# Testcases
+AddTest(DriverTest Driver/CLIParserTest.cpp)
+target_link_libraries(DriverTest gtfw-driver)

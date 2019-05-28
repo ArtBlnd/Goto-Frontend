@@ -1,6 +1,5 @@
 
-add_executable(gtfw-driver
+add_library(gtfw-driver STATIC
     CommandLine.cpp
     CommandLine.h
-    main.cpp
 )

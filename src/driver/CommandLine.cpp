@@ -123,12 +123,28 @@ namespace GTFW
 
             if (Parser::tvIsSpace(c))
             {
+                if (!Val.empty())
+                {
+                    Vals.push_back(Val);
+                }
+
                 if (!Key.empty())
                 {
                     KVArgs.push_back(GenerateKVWithAndClear(Key, Vals));
                 }
 
                 continue;
+            }
+
+            // General Capturing.
+            // TODO : Only capures that supported languages.
+            if (isOnKeyScope)
+            {
+                Key += c;
+            }
+            if (isOnValScope)
+            {
+                Val += c;
             }
         }
     }
@@ -144,8 +160,9 @@ namespace GTFW
             for (unsigned int j = 0; arg[j] != '\0'; ++j)
             {
                 Args += arg[j];
-                Args += " ";
             }
+
+            Args += " ";
         }
 
         return Args;
