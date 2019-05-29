@@ -30,7 +30,7 @@ TEST(DriverTest, CLIParseTestArgs2)
     GTFW::Driver::CommandLineContext* CLIContext = nullptr;
 
     char* argv[] = {
-        "program"
+        "program",
         "-key1=val1,val2",
         "-key2=val1,val2",
     };

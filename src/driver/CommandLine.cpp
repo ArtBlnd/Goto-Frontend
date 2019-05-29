@@ -78,15 +78,9 @@ namespace GTFW
 
             if (Parser::tvIsDash(c))
             {
-                if (isOnKeyScope)
+                if (isOnKeyScope || isOnValScope)
                 {
                     Key += c;
-                    continue;
-                }
-
-                if (isOnValScope)
-                {
-                    Val += c;
                     continue;
                 }
 
@@ -125,11 +119,13 @@ namespace GTFW
             {
                 if (!Val.empty())
                 {
-                    Vals.push_back(Val);
+                    Vals.push_back(std::move(Val));
                 }
 
                 if (!Key.empty())
                 {
+                    isOnKeyScope = false;
+                    isOnValScope = false;
                     KVArgs.push_back(GenerateKVWithAndClear(Key, Vals));
                 }
 
