@@ -11,19 +11,21 @@ namespace GTFW
     // TryParseInScope
     //   Try parse everything in the current scope for specal scope token,
     //   such as quote(", '), braces((, ), [, ], <, >) etcs. 
-    std::string& TryParseInScope(const std::string& argsLine, size_t index, char scopeToken)
+    std::string TryParseInScope(const std::string& argsLine, size_t& index, char scopeToken)
     {
         std::string Records = "";
 
+        ++index;
         for (; index < argsLine.length(); ++index)
         {
             char c = argsLine[index];
-            Records += c;
 
             if (c == scopeToken)
             {
                 return Records;
             }
+
+            Records += c;
         }
 
         throw std::exception("End of qoute is unreachable.");
@@ -53,7 +55,7 @@ namespace GTFW
         throw std::exception(exceptionMessage.c_str());
     }
 
-    void GenerateKVInformationsFrom(const std::string& argsLine, std::vector<Driver::KVInfo*>& KVArgs)
+    void ParseArgsImpl(const std::string& argsLine, std::vector<Driver::KVInfo*>& KVArgs)
     {
         std::string              Key = "";
         std::string              Val = "";
@@ -179,7 +181,7 @@ namespace GTFW
                 return false;
             }
 
-            GenerateKVInformationsFrom(InlinedArgs, argsInfo);
+            ParseArgsImpl(InlinedArgs, argsInfo);
         }
         catch (std::exception e)
         {
