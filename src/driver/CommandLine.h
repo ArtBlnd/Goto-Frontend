@@ -24,9 +24,12 @@ namespace GTFW
             std::vector<std::string> m_clcSourceFiles;
 
             bool LookUpArgs(std::string Key, std::vector<std::string>* Val = nullptr) const;
+            bool HasOption(std::string Key);
+            bool HasOption(std::string Key, std::string Val);
         };
 
         bool CreateCommandLineContextWith(CommandLineContext** ppContext, size_t args, char** argv, char** envp);
+        void InitializeOptions(CommandLineContext* pContext);
         void FreeCommandLineContext(CommandLineContext* pContext);
     }
 }

@@ -218,6 +218,11 @@ namespace GTFW
         return TryParseCommandLine(*ppContext, args, argv, envp);
     }
 
+    void Driver::InitializeOptions(CommandLineContext* pContext)
+    {
+        pContext->LookUpArgs("source-file", &pContext->m_clcSourceFiles);
+    }
+
     void Driver::FreeCommandLineContext(CommandLineContext* pContext)
     {
         for (Driver::KVInfo* infoArgs : pContext->m_clcArgs)

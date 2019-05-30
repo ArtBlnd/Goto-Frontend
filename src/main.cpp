@@ -16,6 +16,8 @@ namespace GTFW
             goto EXIT;
         }
 
+        Driver::InitalizeOptions(CLIContext);
+
     EXIT:
         Driver::FreeCommandLineContext(CLIContext);
         return ExitCode;

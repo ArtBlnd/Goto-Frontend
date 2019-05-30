@@ -8,6 +8,8 @@ namespace GFWK
         class Engine
         {
             
+        public:
+
         };
     }
 }
