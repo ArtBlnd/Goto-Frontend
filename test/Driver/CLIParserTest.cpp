@@ -79,6 +79,54 @@ TEST(DriverTest, CLIParseTestArgs3)
     GTFW::Driver::FreeCommandLineContext(CLIContext);
 }
 
+TEST(DriverTest, CLIParseTestArgs4)
+{
+    GTFW::Driver::CommandLineContext* CLIContext = nullptr;
+
+    char* argv[] = {
+        "program",
+        "-key1",
+        "-key2",
+    };
+
+    bool isCreated = GTFW::Driver::CreateCommandLineContextWith(&CLIContext, 3, argv, nullptr);
+    EXPECT_TRUE(isCreated);
+
+    GTFW::Driver::KVInfo* KV1 = CLIContext->m_clcArgs[0];
+    EXPECT_TRUE(KV1->m_Key == "key1");
+    EXPECT_TRUE(KV1->m_Val.empty());
+
+    GTFW::Driver::KVInfo* KV2 = CLIContext->m_clcArgs[1];
+    EXPECT_TRUE(KV2->m_Key == "key2");
+    EXPECT_TRUE(KV2->m_Val.empty());
+
+    GTFW::Driver::FreeCommandLineContext(CLIContext);
+}
+
+TEST(DriverTest, CLIParseTestArgs5)
+{
+    GTFW::Driver::CommandLineContext* CLIContext = nullptr;
+
+    char* argv[] = {
+        "program",
+        "-key-1",
+        "-key-2",
+    };
+
+    bool isCreated = GTFW::Driver::CreateCommandLineContextWith(&CLIContext, 3, argv, nullptr);
+    EXPECT_TRUE(isCreated);
+
+    GTFW::Driver::KVInfo* KV1 = CLIContext->m_clcArgs[0];
+    EXPECT_TRUE(KV1->m_Key == "key-1");
+    EXPECT_TRUE(KV1->m_Val.empty());
+
+    GTFW::Driver::KVInfo* KV2 = CLIContext->m_clcArgs[1];
+    EXPECT_TRUE(KV2->m_Key == "key-2");
+    EXPECT_TRUE(KV2->m_Val.empty());
+
+    GTFW::Driver::FreeCommandLineContext(CLIContext);
+}
+
 int main(int argc, char** argv)
 {
     testing::InitGoogleTest(&argc, argv);
