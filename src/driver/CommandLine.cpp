@@ -1,11 +1,7 @@
+#include "pch.h"
+
 #include "driver/CommandLine.h"
-
 #include "parser/TokenVerifier.h"
-
-#include <iostream>
-#include <string>
-#include <exception>
-#include <filesystem>
 
 namespace GTFW
 {
@@ -174,6 +170,12 @@ namespace GTFW
         std::vector<Driver::KVInfo*> argsInfo;
         std::vector<Driver::KVInfo*> envsInfo;
 
+        if (args == 1)
+        {
+            // There is no source code target found.
+            return false;
+        }
+
         // First of argv is should be source file.
         context->m_clcTargetSourceFile = argv[1];
 
@@ -226,12 +228,19 @@ namespace GTFW
             return false;
         }
 
+        
+
         *ppContext = CLIContext;
     }
 
 
     void Driver::FreeCommandLineContext(CommandLineContext* pContext)
     {
+        if (pContext == nullptr)
+        {
+            return;
+        }
+
         for (Driver::KVInfo* infoArgs : pContext->m_clcArgs)
         {
             delete infoArgs;
