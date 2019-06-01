@@ -5,6 +5,7 @@
 #include <iostream>
 #include <string>
 #include <exception>
+#include <filesystem>
 
 namespace GTFW
 {
@@ -152,7 +153,9 @@ namespace GTFW
     {
         std::string Args = "";
 
-        for (unsigned int i = 1; i < args; ++i)
+        // We are string index with 2
+        // First index if argv is program name it-self and second is target source file name.
+        for (unsigned int i = 2; i < args; ++i)
         {
             char* arg = argv[i];
             for (unsigned int j = 0; arg[j] != '\0'; ++j)
@@ -171,11 +174,13 @@ namespace GTFW
         std::vector<Driver::KVInfo*> argsInfo;
         std::vector<Driver::KVInfo*> envsInfo;
 
-        // Generating inlined arguments and environments.
-        try 
-        {
-            std::string InlinedArgs = TransformArgvIntoInlinedString(argv, args);
+        // First of argv is should be source file.
+        context->m_clcTargetSourceFile = argv[1];
 
+        // Generating inlined arguments and environments.
+        try
+        {
+            std::string InlinedArgs  = TransformArgvIntoInlinedString(argv, args);
             if (InlinedArgs.empty())
             {
                 return false;
@@ -212,16 +217,18 @@ namespace GTFW
         return false;
     }
 
-    bool Driver::CreateCommandLineContextWith(CommandLineContext** ppContext, size_t args, char** argv, char** envp)
+    bool Driver::InitCommandLineContext(CommandLineContext** ppContext, size_t args, char** argv, char** envp)
     {
-        *ppContext = new CommandLineContext();
-        return TryParseCommandLine(*ppContext, args, argv, envp);
+        CommandLineContext* CLIContext = new CommandLineContext();
+
+        if (!TryParseCommandLine(CLIContext, args, argv, envp))
+        {
+            return false;
+        }
+
+        *ppContext = CLIContext;
     }
 
-    void Driver::InitializeOptions(CommandLineContext* pContext)
-    {
-        pContext->LookUpArgs("source-file", &pContext->m_clcSourceFiles);
-    }
 
     void Driver::FreeCommandLineContext(CommandLineContext* pContext)
     {

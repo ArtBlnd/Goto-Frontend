@@ -21,15 +21,14 @@ namespace GTFW
             std::vector<KVInfo*> m_clcArgs;
             std::vector<KVInfo*> m_clcEnvs;
 
-            std::vector<std::string> m_clcSourceFiles;
+            std::string m_clcTargetSourceFile;
 
             bool LookUpArgs(std::string Key, std::vector<std::string>* Val = nullptr) const;
             bool HasOption(std::string Key);
             bool HasOption(std::string Key, std::string Val);
         };
 
-        bool CreateCommandLineContextWith(CommandLineContext** ppContext, size_t args, char** argv, char** envp);
-        void InitializeOptions(CommandLineContext* pContext);
+        bool InitCommandLineContext(CommandLineContext** ppContext, size_t args, char** argv, char** envp);
         void FreeCommandLineContext(CommandLineContext* pContext);
     }
 }

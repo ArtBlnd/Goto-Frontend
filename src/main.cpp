@@ -10,13 +10,11 @@ namespace GTFW
         int ExitCode = EXIT_SUCCESS;
 
         Driver::CommandLineContext* CLIContext = nullptr;
-        if(!Driver::CreateCommandLineContextWith(&CLIContext, args, argv, envp))
+        if(!Driver::InitCommandLineContext(&CLIContext, args, argv, envp))
         {
             ExitCode = EXIT_FAILURE;
             goto EXIT;
         }
-
-        Driver::InitalizeOptions(CLIContext);
 
     EXIT:
         Driver::FreeCommandLineContext(CLIContext);
