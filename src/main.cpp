@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "driver/CommandLine.h"
 
 #define EXIT_FAILURE 0xFFFFFFFF

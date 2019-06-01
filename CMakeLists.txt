@@ -17,6 +17,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
         /permissive-    # Disable Non-Standard MSVC Features and Syntaxs.
         /MP             # Enable Multi-Process Compilations
         /W4             # Enable Warning Level At Level-3
+        /Yupch.h        # Enable Precompiled-Header for pch.h
 
         # RELEASE COMPILER FLAGS
         $<$<CONFIG:Release>:
