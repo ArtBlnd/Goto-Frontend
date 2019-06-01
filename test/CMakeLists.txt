@@ -12,5 +12,5 @@ set_target_properties(gtest_main PROPERTIES FOLDER test)
 include_directories(gtest/googletest/include)
 
 # Testcases
-AddTest(Test-DriverCLIParserTest Driver/CLIParserTest.cpp)
-target_link_libraries(Test-DriverCLIParserTest gtfw-driver)
+AddTest(DriverTest Driver/CLIParserTest.cpp)
+target_link_libraries(DriverTest gtfw-driver)
