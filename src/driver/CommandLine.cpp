@@ -3,6 +3,8 @@
 #include "driver/CommandLine.h"
 #include "parser/TokenVerifier.h"
 
+#include <filesystem>
+
 namespace GTFW
 {
     // TryParseInScope
@@ -219,6 +221,15 @@ namespace GTFW
         return false;
     }
 
+    // InitCommandLineContext
+    // Information:
+    //   Create and initlaize CommandLineContext
+    // Behavior:
+    //   - Create CommandLineContext
+    //   - Returns false if some kind of failure.
+    //       1. If failed to create CommandLineContext
+    //       2. If failed to find target source file
+    //       3. If failed to find end of argv line.
     bool Driver::InitCommandLineContext(CommandLineContext** ppContext, size_t args, char** argv, char** envp)
     {
         CommandLineContext* CLIContext = new CommandLineContext();
@@ -228,9 +239,14 @@ namespace GTFW
             return false;
         }
 
-        
+        if (!std::filesystem::exists(CLIContext->m_clcTargetSourceFile))
+        {
+            // Target source file does not exists.
+            return false;
+        }
 
         *ppContext = CLIContext;
+        return true;
     }
 
 
