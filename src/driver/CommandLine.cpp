@@ -147,7 +147,7 @@ namespace GTFW
     }
 
     // Generate inlined arguments line from space splited argv
-    std::string TransformArgvIntoInlinedString(char** argv, size_t args)
+    std::string TransformArgvIntoInlinedString(const char** argv, size_t args)
     {
         std::string Args = "";
 
@@ -155,7 +155,7 @@ namespace GTFW
         // First index if argv is program name it-self and second is target source file name.
         for (unsigned int i = 2; i < args; ++i)
         {
-            char* arg = argv[i];
+            const char* arg = argv[i];
             for (unsigned int j = 0; arg[j] != '\0'; ++j)
             {
                 Args += arg[j];
@@ -167,7 +167,7 @@ namespace GTFW
         return Args;
     }
 
-    bool TryParseCommandLine(Driver::CommandLineContext* context, size_t args, char** argv, char** envp)
+    bool TryParseCommandLine(Driver::CommandLineContext* context, size_t args, const char** argv, const char** envp)
     {
         std::vector<Driver::KVInfo*> argsInfo;
         std::vector<Driver::KVInfo*> envsInfo;
@@ -230,7 +230,7 @@ namespace GTFW
     //       1. If failed to create CommandLineContext
     //       2. If failed to find target source file
     //       3. If failed to find end of argv line.
-    bool Driver::InitCommandLineContext(CommandLineContext** ppContext, size_t args, char** argv, char** envp)
+    bool Driver::InitCommandLineContext(CommandLineContext** ppContext, size_t args, const char** argv, const char** envp)
     {
         CommandLineContext* CLIContext = new CommandLineContext();
 
