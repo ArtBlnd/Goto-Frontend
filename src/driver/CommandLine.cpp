@@ -184,10 +184,10 @@ namespace GTFW
         // Generating inlined arguments and environments.
         try
         {
-            std::string InlinedArgs  = TransformArgvIntoInlinedString(argv, args);
+            std::string InlinedArgs = TransformArgvIntoInlinedString(argv, args);
             if (InlinedArgs.empty())
             {
-                return false;
+                return true;
             }
 
             ParseArgsImpl(InlinedArgs, argsInfo);
@@ -236,13 +236,6 @@ namespace GTFW
 
         if (!TryParseCommandLine(CLIContext, args, argv, envp))
         {
-            FreeCommandLineContext(CLIContext);
-            return false;
-        }
-
-        if (!std::filesystem::exists(CLIContext->m_clcTargetSourceFile))
-        {
-            // Target source file does not exists.
             FreeCommandLineContext(CLIContext);
             return false;
         }

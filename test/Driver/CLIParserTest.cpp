@@ -146,7 +146,7 @@ TEST_CASE("CLIParserTestSourceFile", "DriverTest")
 
     bool isCreated = GTFW::Driver::InitCommandLineContext(&CLIContext, 2, argv, nullptr);
     REQUIRE(isCreated);
-    REQUIRE(CLIContext->m_clcTargetSourceFile == "source.cpp");
+    REQUIRE(CLIContext->m_clcTargetSourceFile == "dummy_source.cpp");
 
     GTFW::Driver::FreeCommandLineContext(CLIContext);
 }
