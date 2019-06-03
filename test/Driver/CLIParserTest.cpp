@@ -1,7 +1,8 @@
 #define CATCH_CONFIG_MAIN
 
+#include "pch.h"
 #include "catch2/catch.hpp"
-#include <driver/CommandLine.h>
+#include "driver/CommandLine.h"
 
 TEST_CASE("CLIParserTestArgs1", "DriverTest")
 {
