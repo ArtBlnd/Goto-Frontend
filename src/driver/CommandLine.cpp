@@ -236,12 +236,14 @@ namespace GTFW
 
         if (!TryParseCommandLine(CLIContext, args, argv, envp))
         {
+            FreeCommandLineContext(CLIContext);
             return false;
         }
 
         if (!std::filesystem::exists(CLIContext->m_clcTargetSourceFile))
         {
             // Target source file does not exists.
+            FreeCommandLineContext(CLIContext);
             return false;
         }
 
