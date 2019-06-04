@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "driver/CommandLine.h"
+#include "driver/Driver.h"
 
 #ifdef EXIT_FAILURE
 #undef EXIT_FAILURE
@@ -23,6 +24,8 @@ namespace GTFW
             ExitCode = EXIT_FAILURE;
             goto EXIT;
         }
+
+        ExitCode = Driver::ExecuteCompilerDriver(CLIContext);
 
     EXIT:
         Driver::FreeCommandLineContext(CLIContext);
