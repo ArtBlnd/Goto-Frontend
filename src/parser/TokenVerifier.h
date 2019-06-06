@@ -55,10 +55,38 @@ namespace GTFW
         }
 
         // Token Verifier
-        // Type : '=' (Equal)
+        // Type : '=' (EQUAL)
         inline bool tvIsEqualSym(const char c)
         {
             return c == '=';
+        }
+        
+        // Token Verifier
+        // Type : '(, )' (PAREN)
+        inline bool tvIsParen(const char c, bool isClosed)
+        {
+            return isClosed ? c == ')' : c == '(';
+        }
+
+        // Token Verifier
+        // Type : '[, ]' (SQUARE)
+        inline bool tvIsSquare(const char c, bool isClosed)
+        {
+            return isClosed ? c == ']' : c == '[';
+        }
+
+        // Token Verifier
+        // Type : '{, }' (CURLY)
+        inline bool tvIsCurly(const char c, bool isClosed)
+        {
+            return isClosed ? c == '}' : c == '{';
+        }
+
+        // Token Verifier
+        // Type : '*' (ASTERISK)
+        inline bool tvIsAsterisk(const char c)
+        {
+            return c == '*';
         }
     }
 }
