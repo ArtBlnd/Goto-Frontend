@@ -120,6 +120,22 @@ namespace GTFW
         // Token Unknown Implements
         //
 
+        TokenUnknown::TokenUnknown(size_t Line, size_t Column, char UnknownToken) :
+            Token(TokenType::TOKEN_UNKNOWN, 1 /* One Char */, Line, Column)
+        {
+            m_tkUnknown = UnknownToken;
+        }
+
+        bool TokenUnknown::IsToken(char token) const
+        {
+            return m_tkUnknown == token;
+        }
+
+        constexpr char TokenUnknown::Get() const
+        {
+            return m_tkUnknown;
+        }
+
         //
         // Token Literal Implements
         //
@@ -127,6 +143,36 @@ namespace GTFW
             Token(TokenType::TOKEN_LITERAL, SymbolLiteral.length(), Line, Column)
         {
             m_tkLiteral = std::move(SymbolLiteral);
+        }
+
+        bool TokenLiteral::IsToken(std::string token) const
+        {
+            return token == m_tkLiteral;
+        }
+
+        bool TokenLiteral::IsToken(const std::string& token) const
+        {
+            return token == m_tkLiteral;
+        }
+
+        bool TokenLiteral::IsStringLiteral() const
+        {
+            return !IsFloatingLiteral() && !IsIntegerLiteral();
+        }
+
+        bool TokenLiteral::IsFloatingLiteral() const
+        {
+
+        }
+
+        bool TokenLiteral::IsIntegerLiteral() const
+        {
+
+        }
+
+        constexpr std::string TokenLiteral::Get() const
+        {
+            return m_tkLiteral;
         }
 
         //
@@ -172,5 +218,59 @@ namespace GTFW
         {
             return tvIsAsterisk(Get());
         }
+
+        //
+        // Token Identifier Implements
+        //
+
+        TokenIdentifier::TokenIdentifier(size_t Line, size_t Column, std::string IdentifierToken) :
+            Token(TokenType::TOKEN_IDENTIFIER, IdentifierToken.size(), Line, Column)
+        {
+            m_tkIdentifier = IdentifierToken;
+        }
+
+        //
+        // Token Whitespace Implements
+        //
+
+        TokenWhitespace::TokenWhitespace(size_t Size, size_t Line, size_t Column) :
+            Token(TokenType::TOKEN_WHITESPACE, Size, Line, Column)
+        {
+
+        }
+        
+        //
+        // TokenContext Implements
+        //
+
+        Token* TokenContext::CreateUnknownToken(char token)
+        {
+            return nullptr;
+        }
+
+        Token* TokenContext::CreateLiteralToken(char* token, size_t length)
+        {
+            return nullptr;
+        }
+
+        Token* TokenContext::CreateSymbolToken(char token)
+        {
+            return nullptr;
+        }
+
+        Token* TokenContext::CreateIdentifierToken(char* token, size_t length)
+        {
+            return nullptr;
+        }
+
+        Token* TokenContext::CreateWhitespaceToken(size_t whitespaceLength)
+        {
+            return nullptr;
+        }
+
+        void TokenContext::InsertToken(Token* nextToken)
+        {
+        }
+
     }
 }

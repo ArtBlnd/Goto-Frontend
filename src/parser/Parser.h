@@ -67,11 +67,11 @@ namespace GTFW
             char m_tkUnknown;
 
         protected:
-            TokenUnknown(size_t Line, size_t Column, std::string UnknownToken);
+            TokenUnknown(size_t Line, size_t Column, char UnknownToken);
 
         public:
             bool IsToken(char token) const;
-            const char Get() const;
+            constexpr char Get() const;
         };
 
         class TokenLiteral : Token
