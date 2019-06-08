@@ -272,5 +272,9 @@ namespace GTFW
         {
         }
 
+        constexpr size_t TokenContext::GetTokenObjectSize()
+        {
+            return sizeof(Token) + 32;
+        }
     }
 }
