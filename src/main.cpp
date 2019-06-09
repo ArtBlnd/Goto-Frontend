@@ -25,7 +25,7 @@ namespace GTFW
             goto EXIT;
         }
 
-        ExitCode = Driver::ExecuteCompilerDriver(CLIContext);
+        ExitCode = Driver::ExecuteCompilerEngine(CLIContext);
 
     EXIT:
         Driver::FreeCommandLineContext(CLIContext);

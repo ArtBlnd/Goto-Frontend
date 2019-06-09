@@ -7,7 +7,7 @@ namespace GTFW
     {
         struct CommandLineContext;
 
-        bool ExecuteCompilerDriver(CommandLineContext* CLIContext);
+        bool ExecuteCompilerEngine(CommandLineContext* CLIContext);
     }
 }
 

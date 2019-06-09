@@ -18,7 +18,8 @@ namespace GTFW
         {
             STAGE_INIT          = 0x01, 
             STAGE_TOKENLIZE     = 0x02, 
-            STAGE_PARSE         = 0x03
+            STAGE_PARSE         = 0x03,
+            STAGE_AST_TO_CG     = 0x04, // AST tree to Code-Generation.
         };
 
         struct EngineBuilder
@@ -30,7 +31,7 @@ namespace GTFW
 
         class Engine
         {
-            const size_t EngineStageCnt = 3;
+            const size_t EngineStageCnt = 4;
 
         protected:
             EnginePhase m_egStage;
