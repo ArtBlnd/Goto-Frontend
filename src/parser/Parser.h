@@ -38,6 +38,12 @@ namespace GTFW
             Token(TokenType Type, size_t Size, size_t Line, size_t Column);
 
         public:
+            Token* m_tkNext = nullptr;
+            Token* m_tkPriv = nullptr;
+
+            bool IsTokenEnd() const;
+            bool IsTokenBegin() const;
+
             size_t GetSize() const;
             size_t GetLine() const;
             size_t GetColumn() const;
