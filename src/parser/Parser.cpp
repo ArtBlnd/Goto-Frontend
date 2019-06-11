@@ -16,6 +16,16 @@ namespace GTFW
             m_tkColumn = Column;
         }
 
+        bool Token::IsTokenEnd() const
+        {
+            return m_tkNext == nullptr;
+        }
+
+        bool Token::IsTokenBegin() const
+        {
+            return m_tkPrev == nullptr;
+        }
+
         size_t Token::GetSize() const
         {
             return m_tkSize;

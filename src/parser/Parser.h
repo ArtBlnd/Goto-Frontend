@@ -39,7 +39,7 @@ namespace GTFW
 
         public:
             Token* m_tkNext = nullptr;
-            Token* m_tkPriv = nullptr;
+            Token* m_tkPrev = nullptr;
 
             bool IsTokenEnd() const;
             bool IsTokenBegin() const;
