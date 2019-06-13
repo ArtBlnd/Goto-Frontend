@@ -17,23 +17,30 @@ namespace GTFW
 
         class DriverOption
         {
-            std::string       m_doKey;
+            std::any    m_doVal;
+            std::string m_doKey;
 
             // Contains description of option
             // Note that this will be emitted if there is wrong value type on option or option helper is called.
-            std::string       m_doDesc; 
+            std::string m_doDesc; 
 
             DriverOptionLevel m_doLevel;
 
         public:
             DriverOption() = delete;
-            explicit DriverOption(std::string Key, std::string Desc, DriverOptionLevel Level);
-            explicit DriverOption(std::string Key, DriverOptionLevel Level); // With no descprition
+            DriverOption(std::string Key, std::string Desc, DriverOptionLevel Level);
+            DriverOption(std::string Key, DriverOptionLevel Level); // With no descprition
 
             std::string GetKeyOf() const;
             std::string GetDescriptionOf() const;
             DriverOptionLevel GetLevelOf() const;
+
+            const char* GetValTypeName() const;
+            std::any GetValOf();
+            std::any SetValue(std::any newValue);
         };
+
+#define DEF_DRV_OPTION(Name, Key, Desc, Level) DriverOption Name = DriverOption(Key, Desc, Level);
     }
 }
 

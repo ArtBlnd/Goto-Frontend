@@ -30,5 +30,21 @@ namespace GTFW
         {
             return m_doLevel;
         }
+
+        const char* DriverOption::GetValTypeName() const
+        {
+            return m_doVal.type().name();
+        }
+
+        std::any DriverOption::GetValOf()
+        {
+            return m_doVal;
+        }
+
+        std::any DriverOption::SetValue(std::any newValue)
+        {
+            std::swap(m_doVal, newValue);
+            return m_doVal;
+        }
     }
 }

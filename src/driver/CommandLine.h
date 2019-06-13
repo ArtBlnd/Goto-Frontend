@@ -3,11 +3,13 @@
 
 #include <vector>
 #include <string>
+#include "driver/DriverOption.h"
 
 namespace GTFW
 {
     namespace Driver
     {
+
         struct KVInfo
         {
             std::string              m_Key;
@@ -23,7 +25,9 @@ namespace GTFW
 
             std::string m_clcTargetSourceFile;
 
-            bool LookUpArgs(std::string Key, std::vector<std::string>* Val = nullptr) const;
+            DEF_DRV_OPTION(doOptLevel1, "O1", "Enable minimal optimziation", DriverOptionLevel::DOL_OPTIONAL);
+            DEF_DRV_OPTION(doOptLevel2, "O2", "Enable size-targeted optimization", DriverOptionLevel::DOL_OPTIONAL);
+            DEF_DRV_OPTION(doOptLevel3, "O3", "Eanble full optimziation", DriverOptionLevel::DOL_OPTIONAL);
         };
 
         bool InitCommandLineContext(CommandLineContext** ppContext, size_t args, const char** argv, const char** envp);
