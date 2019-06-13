@@ -25,9 +25,23 @@ namespace GTFW
 
             std::string m_clcTargetSourceFile;
 
+            //
+            // OPTIONS (OPTIMIZATIONS)
+            //
             DEF_DRV_OPTION(doOptLevel1, "O1", "Enable minimal optimziation", DriverOptionLevel::DOL_OPTIONAL);
             DEF_DRV_OPTION(doOptLevel2, "O2", "Enable size-targeted optimization", DriverOptionLevel::DOL_OPTIONAL);
             DEF_DRV_OPTION(doOptLevel3, "O3", "Eanble full optimziation", DriverOptionLevel::DOL_OPTIONAL);
+
+            //
+            // OPTIONS (DEBUG)
+            //
+            DEF_DRV_OPTION(doEnableASTDump, "dump-ast", "Enable dump for ASTs", DriverOptionLevel::DOL_HIDDEN);
+            DEF_DRV_OPTION(doEnableVerbose, "verbose", "Enable debug informations", DriverOptionLevel::DOL_OPTIONAL);
+
+            //
+            // OPTIONS (BUILD)
+            //
+            DEF_DRV_OPTION(doOutputPath, "output-path", "Set output path", DriverOptionLevel::DOL_OPTIONAL);
         };
 
         bool InitCommandLineContext(CommandLineContext** ppContext, size_t args, const char** argv, const char** envp);

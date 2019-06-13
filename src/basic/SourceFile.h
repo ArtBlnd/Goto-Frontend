@@ -7,15 +7,8 @@ namespace GFWK
 {
     namespace Basic
     {
-        enum class SourceType
-        {
-            HEADER, SOURCE
-        };
-
         class SourceFile
         {
-            SourceType m_sfType;
-
             std::string m_sfFilePath;
             std::string m_sfFileName;
         };
