@@ -203,23 +203,6 @@ namespace GTFW
         return true;
     }
 
-    bool Driver::CommandLineContext::LookUpArgs(std::string Key, std::vector<std::string>* Val) const
-    {
-        for (Driver::KVInfo* info : this->m_clcArgs)
-        {
-            if (info->m_Key == Key)
-            {
-                if (Val != nullptr)
-                {
-                    *Val = info->m_Val;
-                }
-
-                return true;
-            }
-        }
-
-        return false;
-    }
 
     // InitCommandLineContext
     // Information:
