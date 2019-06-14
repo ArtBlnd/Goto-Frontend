@@ -88,6 +88,18 @@ namespace GTFW
         {
             return c == '*';
         }
+
+        // Token Verifier
+        // Type : '1|2|3|4|5|6|7|8|9|0' (INTERGERS)
+        bool tvIsInteger(const char* c);
+
+        // Token Verifier
+        // Type : 'true|false|0|1' (BOOLEANDS)
+        bool tvIsBoolean(const char* c);
+
+        // Token Verifier
+        // Type : 'a > | z <' (ALPHABET)
+        bool tvIsAlphabet(const char* c);
     }
 }
 
