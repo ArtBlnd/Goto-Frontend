@@ -1,8 +1,9 @@
-#ifndef __GTFW_C_FRONTNED_DRIVER_DRVIER_OPTION_H__
+#ifndef __GTFW_C_FRONTNED_DRIVER_DRIVER_OPTION_H__
 #define __GTFW_C_FRONTEND_DRIVER_DRIVER_OPTION_H__
 
 #include <string>
 #include <any>
+#include <unordered_map>
 
 namespace GTFW
 {
@@ -15,6 +16,7 @@ namespace GTFW
             DOL_OPTIONAL    = 0x02,
         };
 
+        class DriverOptionTable;
         class DriverOption
         {
             std::any    m_doVal;
@@ -28,8 +30,8 @@ namespace GTFW
 
         public:
             DriverOption() = delete;
-            DriverOption(std::string Key, std::string Desc, DriverOptionLevel Level);
-            DriverOption(std::string Key, DriverOptionLevel Level); // With no descprition
+            DriverOption(DriverOptionTable* Table, std::string Key, std::string Desc, DriverOptionLevel Level);
+            DriverOption(DriverOptionTable* Table, std::string Key, DriverOptionLevel Level); // With no descprition
 
             std::string GetKeyOf() const;
             std::string GetDescriptionOf() const;
@@ -40,7 +42,19 @@ namespace GTFW
             std::any SetValue(std::any newValue);
         };
 
-#define DEF_DRV_OPTION(Name, Key, Desc, Level) DriverOption Name = DriverOption(Key, Desc, Level);
+        class DriverOptionTable
+        {
+            friend class DriverOption;
+            std::unordered_map<std::string, DriverOption*> m_dotTable;
+
+        protected:
+            void AddOption(DriverOption* Option);
+
+        public:
+            DriverOption* Lookup(std::string Key);
+        };
+
+#define DEF_DRV_OPTION(Table, Name, Key, Desc, Level) DriverOption Name = DriverOption(Table, Key, Desc, Level);
     }
 }
 

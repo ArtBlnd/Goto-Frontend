@@ -9,39 +9,29 @@ namespace GTFW
 {
     namespace Driver
     {
-
-        struct KVInfo
-        {
-            std::string              m_Key;
-            std::vector<std::string> m_Val;
-        };
-
         struct CommandLineContext
         {
-            // clcArgs and clcEnvs contains parsed program execution informations
-            // clcArgs contains program argument informations, and clcEvns contains program execution envionrment informations.
-            std::vector<KVInfo*> m_clcArgs;
-            std::vector<KVInfo*> m_clcEnvs;
-
             std::string m_clcTargetSourceFile;
+
+            DriverOptionTable m_clcOptionTable;
 
             //
             // OPTIONS (OPTIMIZATIONS)
             //
-            DEF_DRV_OPTION(doOptLevel1, "O1", "Enable minimal optimziation", DriverOptionLevel::DOL_OPTIONAL);
-            DEF_DRV_OPTION(doOptLevel2, "O2", "Enable size-targeted optimization", DriverOptionLevel::DOL_OPTIONAL);
-            DEF_DRV_OPTION(doOptLevel3, "O3", "Eanble full optimziation", DriverOptionLevel::DOL_OPTIONAL);
+            DEF_DRV_OPTION(&m_clcOptionTable, doOptLevel1, "O1", "Enable minimal optimziation", DriverOptionLevel::DOL_OPTIONAL);
+            DEF_DRV_OPTION(&m_clcOptionTable, doOptLevel2, "O2", "Enable size-targeted optimization", DriverOptionLevel::DOL_OPTIONAL);
+            DEF_DRV_OPTION(&m_clcOptionTable, doOptLevel3, "O3", "Eanble full optimziation", DriverOptionLevel::DOL_OPTIONAL);
 
             //
             // OPTIONS (DEBUG)
             //
-            DEF_DRV_OPTION(doEnableASTDump, "dump-ast", "Enable dump for ASTs", DriverOptionLevel::DOL_HIDDEN);
-            DEF_DRV_OPTION(doEnableVerbose, "verbose", "Enable debug informations", DriverOptionLevel::DOL_OPTIONAL);
+            DEF_DRV_OPTION(&m_clcOptionTable, doEnableASTDump, "dump-ast", "Enable dump for ASTs", DriverOptionLevel::DOL_HIDDEN);
+            DEF_DRV_OPTION(&m_clcOptionTable, doEnableVerbose, "verbose", "Enable debug informations", DriverOptionLevel::DOL_OPTIONAL);
 
             //
             // OPTIONS (BUILD)
             //
-            DEF_DRV_OPTION(doOutputPath, "output-path", "Set output path", DriverOptionLevel::DOL_OPTIONAL);
+            DEF_DRV_OPTION(&m_clcOptionTable, doOutputPath, "output-path", "Set output path", DriverOptionLevel::DOL_OPTIONAL);
         };
 
         bool InitCommandLineContext(CommandLineContext** ppContext, size_t args, const char** argv, const char** envp);

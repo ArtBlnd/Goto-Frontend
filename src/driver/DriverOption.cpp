@@ -4,15 +4,17 @@ namespace GTFW
 {
     namespace Driver
     {
-        DriverOption::DriverOption(std::string Key, std::string Desc, DriverOptionLevel Level)
+        DriverOption::DriverOption(DriverOptionTable* Table, std::string Key, std::string Desc, DriverOptionLevel Level)
         {
             m_doKey   = Key;
             m_doDesc  = Desc;
             m_doLevel = Level;
+
+            Table->AddOption(this);
         }
 
-        DriverOption::DriverOption(std::string Key, DriverOptionLevel Level) :
-            DriverOption(Key, "" /* Empty Description*/, Level)
+        DriverOption::DriverOption(DriverOptionTable* Table, std::string Key, DriverOptionLevel Level) :
+            DriverOption(Table, Key, "" /* Empty Description*/, Level)
         {
         }
 
@@ -45,6 +47,16 @@ namespace GTFW
         {
             std::swap(m_doVal, newValue);
             return m_doVal;
+        }
+
+        void DriverOptionTable::AddOption(DriverOption* Option)
+        {
+            m_dotTable.insert(std::make_pair(Option->GetKeyOf(), Option));
+        }
+
+        DriverOption* DriverOptionTable::Lookup(std::string Key)
+        {
+            return m_dotTable[Key];
         }
     }
 }
