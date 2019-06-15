@@ -44,7 +44,42 @@ namespace GTFW
 
     void SetOptionValue(std::string& Key, std::vector<std::string>& Val, Driver::DriverOption* Option)
     {
+        if (Val.empty())
+        {
+            // Defining just an key should be enabling
+            // So replacing it with boolean true/false
 
+            Option->SetValue(true);
+            return;
+        }
+
+        if (Val.size() == 1)
+        {
+            std::string& tVal = Val[0];
+
+            if (Parser::tvIsInteger(tVal.c_str()))
+            {
+                Option->SetValue(std::stoi(tVal));
+
+                return;
+            }
+
+            if (Parser::tvIsBoolean(tVal.c_str()))
+            {
+                if (tVal == "true" || tVal == "1")
+                {
+                    Option->SetValue(true);
+                }
+                else
+                {
+                    Option->SetValue(false);
+                }
+
+                return;
+            }
+
+            Option->SetValue(tVal);
+        }
     }
 
     void ParseArgsImpl(const std::string& argsLine, Driver::CommandLineContext* context)
