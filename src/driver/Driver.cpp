@@ -8,10 +8,11 @@ namespace GTFW
 {
     bool Driver::ExecuteCompilerEngine(CommandLineContext* CLIContext)
     {
-        Basic::Engine engine(Basic::EngineOpts::NO_OPT);
+        Basic::EngineBuilder           engineBuilder;
+        std::unique_ptr<Basic::Engine> engine = engineBuilder.BuildEngine();
 
-        engine.SetEngineStage(Basic::EngineStage::STAGE_INIT);
+        engine->SetEnginePhase(Basic::EnginePhase::STAGE_INIT);
 
-        return engine.StartCompile();
+        return engine->StartCompile();
     }
 }
