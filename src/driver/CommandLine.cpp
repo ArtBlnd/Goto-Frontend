@@ -57,14 +57,14 @@ namespace GTFW
         {
             std::string& tVal = Val[0];
 
-            if (Parser::tvIsInteger(tVal.c_str()))
+            if (Parser::tvIsInteger(tVal))
             {
                 Option->SetValue(std::stoi(tVal));
 
                 return;
             }
 
-            if (Parser::tvIsBoolean(tVal.c_str()))
+            if (Parser::tvIsBoolean(tVal))
             {
                 if (tVal == "true" || tVal == "1")
                 {

@@ -1,6 +1,8 @@
 #ifndef __GFWK_C_FRONTEND_PARSER_TOKEN_VERIFIER_H__
 #define __GFWK_C_FRONTEND_PARSER_TOKEN_VERIFIER_H__
 
+#include <string>
+
 namespace GTFW
 {
     namespace Parser
@@ -91,15 +93,15 @@ namespace GTFW
 
         // Token Verifier
         // Type : '1|2|3|4|5|6|7|8|9|0' (INTERGERS)
-        bool tvIsInteger(const char* c);
+        bool tvIsInteger(const std::string& str);
 
         // Token Verifier
         // Type : 'true|false|0|1' (BOOLEANDS)
-        bool tvIsBoolean(const char* c);
+        bool tvIsBoolean(const std::string& str);
 
         // Token Verifier
         // Type : 'a > | z <' (ALPHABET)
-        bool tvIsAlphabet(const char* c);
+        bool tvIsAlphabet(const std::string& str);
     }
 }
 
