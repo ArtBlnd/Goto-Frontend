@@ -7,6 +7,8 @@ namespace GTFW
 {
     namespace Basic
     {
+        class Engine;
+
         enum EngineOptLevel
         {
             FULL_OPT            = 0x01, // -O3 Flag
