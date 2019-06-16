@@ -13,7 +13,8 @@ namespace GTFW
         {
             FULL_OPT            = 0x01, // -O3 Flag
             SMALL_CODE_OPT      = 0x02, // -O2 Flag
-            NO_OPT              = 0x03  // -O1 Flag
+            MINIMIZED_OPT       = 0x03, // -O1 Flag
+            NO_OPT              = 0x04  // -O0 Flag
         };
 
         enum EnginePhase

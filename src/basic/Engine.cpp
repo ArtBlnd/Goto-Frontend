@@ -17,6 +17,7 @@ namespace GTFW
 
         Engine::Engine()
         {
+
         }
 
         EnginePhase Engine::GetEnginePhase() const
