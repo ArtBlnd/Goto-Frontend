@@ -7,3 +7,5 @@ add_library(gtfw-driver STATIC
     DriverOption.cpp
     DriverOption.h
 )
+
+target_link_libraries(gtfw-driver gtfw-parser)
