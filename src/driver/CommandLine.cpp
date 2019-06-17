@@ -2,6 +2,7 @@
 
 #include "driver/CommandLine.h"
 #include "parser/TokenVerifier.h"
+#include "parser/Parser.h"
 
 #include <filesystem>
 
@@ -55,30 +56,23 @@ namespace GTFW
 
         if (Val.size() == 1)
         {
-            std::string& tVal = Val[0];
+            std::string& strVal = Val[0];
 
-            if (Parser::tvIsInteger(tVal))
+            if (Parser::tvIsInteger(strVal))
             {
-                Option->SetValue(std::stoi(tVal));
-
+                Option->SetValue(Parser::psStr2IntegerTransform(strVal));
                 return;
             }
 
-            if (Parser::tvIsBoolean(tVal))
+            if (Parser::tvIsBoolean(strVal))
             {
-                if (tVal == "true" || tVal == "1")
-                {
-                    Option->SetValue(true);
-                }
-                else
-                {
-                    Option->SetValue(false);
-                }
-
+                Option->SetValue(Parser::psStr2BoolTransform(strVal));
                 return;
             }
 
-            Option->SetValue(tVal);
+            // Seems its raw string
+            // We are just putting value into Option.
+            Option->SetValue(strVal);
         }
     }
 

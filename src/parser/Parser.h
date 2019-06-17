@@ -5,6 +5,11 @@
 
 namespace GTFW
 {
+    namespace Engine
+    {
+        class Engine;
+    }
+
     namespace Parser
     {
         class TokenUnknown;
@@ -96,7 +101,7 @@ namespace GTFW
             bool IsFloatingLiteral() const;
             bool IsIntegerLiteral() const;
 
-            constexpr std::string Get() const;
+            std::string Get() const;
         };
 
         class TokenSymbol : Token
@@ -116,7 +121,7 @@ namespace GTFW
             bool IsSymbolSemicolon() const;
             bool IsSymbolAsterisk() const;
 
-            constexpr char Get() const;
+            char Get() const;
         };
 
         class TokenIdentifier : Token
@@ -156,6 +161,8 @@ namespace GTFW
             size_t m_tcIdentifierTokenCnt = 0;
             size_t m_tcWhitespaceTokenCnt = 0;
 
+            Token* CreateTokenObjectImpl(Engine::Engine* compEngine);
+
         public:
             Token* CreateUnknownToken(char token);
             Token* CreateLiteralToken(char* token, size_t length);
@@ -168,6 +175,9 @@ namespace GTFW
             static constexpr size_t GetTokenObjectSize();
         };
 
+        // Tokenlize source code to TokenContext
+        bool psTokenlizeSourceCode(TokenContext* context, void* sourceFileBuf, size_t sourceFileSz);
+
         // Compute token to token width
         // for example
         //      void* Func();
@@ -176,6 +186,17 @@ namespace GTFW
         //        T1    T2
         // returning size of first char 'v' to last T1 char of 'c'. so its 10
         size_t psComputeT2TWidth(const Token* token1, const Token* token2);
+
+
+        // Transform string to boolean
+        // "true" | "1" will transform to boolean true
+        // "false" | "0" will transform to boolean false
+        bool psStr2BoolTransform(const std::string& str);
+
+        // Transform string to integer
+        // for example. string "1040" will transform into 1040 int value
+        // emit exception if its overflow.
+        int psStr2IntegerTransform(const std::string& str);
     }
 }
 

@@ -172,15 +172,17 @@ namespace GTFW
 
         bool TokenLiteral::IsFloatingLiteral() const
         {
-
+            // TODO : implements
+            return true;
         }
 
         bool TokenLiteral::IsIntegerLiteral() const
         {
-
+            // TODO : implements
+            return true;
         }
 
-        constexpr std::string TokenLiteral::Get() const
+        std::string TokenLiteral::Get() const
         {
             return m_tkLiteral;
         }
@@ -194,7 +196,7 @@ namespace GTFW
             m_tkSymbol = SymbolToken;
         }
 
-        constexpr char TokenSymbol::Get() const
+        char TokenSymbol::Get() const
         {
             return m_tkSymbol;
         }
@@ -255,26 +257,31 @@ namespace GTFW
 
         Token* TokenContext::CreateUnknownToken(char token)
         {
+            m_tcUnknownTokenCnt++;
             return nullptr;
         }
 
         Token* TokenContext::CreateLiteralToken(char* token, size_t length)
         {
+            m_tcLiteralTokenCnt++;
             return nullptr;
         }
 
         Token* TokenContext::CreateSymbolToken(char token)
         {
+            m_tcSymbolTokenCnt++;
             return nullptr;
         }
 
         Token* TokenContext::CreateIdentifierToken(char* token, size_t length)
         {
+            m_tcIdentifierTokenCnt++;
             return nullptr;
         }
 
         Token* TokenContext::CreateWhitespaceToken(size_t whitespaceLength)
         {
+            m_tcWhitespaceTokenCnt++;
             return nullptr;
         }
 
@@ -307,5 +314,31 @@ namespace GTFW
             return offEnd - offBegin;
         }
 
-}
+        bool psStr2BoolTransform(const std::string& str)
+        {
+            if (str.length() == 1)
+            {
+                return str[0] == '1';
+            }
+
+            if (str == "true")
+            {
+                return true;
+            }
+            if (str == "false")
+            {
+                return false;
+            }
+
+            // Unknown token for boolean transformation
+            // emit exeception.
+            return false;
+        }
+
+        int psStr2IntegerTransform(const std::string& str)
+        {
+            // TODO : self-implements.
+            return std::atoi(str.c_str());
+        }
+    }
 }
