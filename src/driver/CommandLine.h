@@ -18,20 +18,20 @@ namespace GTFW
             //
             // OPTIONS (OPTIMIZATIONS)
             //
-            DEF_DRV_OPTION(&m_clcOptionTable, doOptLevel1, "O1", "Enable minimal optimziation", DriverOptionLevel::DOL_OPTIONAL);
-            DEF_DRV_OPTION(&m_clcOptionTable, doOptLevel2, "O2", "Enable size-targeted optimization", DriverOptionLevel::DOL_OPTIONAL);
-            DEF_DRV_OPTION(&m_clcOptionTable, doOptLevel3, "O3", "Eanble full optimziation", DriverOptionLevel::DOL_OPTIONAL);
+            DEF_DRV_OPTION(&m_clcOptionTable, doOptLevel1, "O1", false, "Enable minimal optimziation", DriverOptionLevel::DOL_OPTIONAL);
+            DEF_DRV_OPTION(&m_clcOptionTable, doOptLevel2, "O2", false, "Enable size-targeted optimization", DriverOptionLevel::DOL_OPTIONAL);
+            DEF_DRV_OPTION(&m_clcOptionTable, doOptLevel3, "O3", false,  "Eanble full optimziation", DriverOptionLevel::DOL_OPTIONAL);
 
             //
             // OPTIONS (DEBUG)
             //
-            DEF_DRV_OPTION(&m_clcOptionTable, doEnableASTDump, "dump-ast", "Enable dump for ASTs", DriverOptionLevel::DOL_HIDDEN);
-            DEF_DRV_OPTION(&m_clcOptionTable, doEnableVerbose, "verbose", "Enable debug informations", DriverOptionLevel::DOL_OPTIONAL);
+            DEF_DRV_OPTION(&m_clcOptionTable, doEnableASTDump, "dump-ast", false, "Enable dump for ASTs", DriverOptionLevel::DOL_HIDDEN);
+            DEF_DRV_OPTION(&m_clcOptionTable, doEnableVerbose, "verbose", false, "Enable debug informations", DriverOptionLevel::DOL_OPTIONAL);
 
             //
             // OPTIONS (BUILD)
             //
-            DEF_DRV_OPTION(&m_clcOptionTable, doOutputPath, "output-path", "Set output path", DriverOptionLevel::DOL_OPTIONAL);
+            DEF_DRV_OPTION(&m_clcOptionTable, doOutputPath, "output-path", "", "Set output path", DriverOptionLevel::DOL_OPTIONAL);
         };
 
         bool InitCommandLineContext(CommandLineContext** ppContext, size_t args, const char** argv, const char** envp);

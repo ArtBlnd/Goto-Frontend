@@ -30,16 +30,23 @@ namespace GTFW
 
         public:
             DriverOption() = delete;
-            DriverOption(DriverOptionTable* Table, std::string Key, std::string Desc, DriverOptionLevel Level);
-            DriverOption(DriverOptionTable* Table, std::string Key, DriverOptionLevel Level); // With no descprition
+            DriverOption(DriverOptionTable* Table, std::string Key, std::any Init, std::string Desc, DriverOptionLevel Level);
+            DriverOption(DriverOptionTable* Table, std::string Key, std::any Init, DriverOptionLevel Level); // With no descprition
 
             std::string GetKeyOf() const;
             std::string GetDescriptionOf() const;
             DriverOptionLevel GetLevelOf() const;
 
             const char* GetValTypeName() const;
+
             std::any GetValOf();
             std::any SetValue(std::any newValue);
+
+            template <class T>
+            constexpr T GetValOf()
+            {
+                return std::any_cast<T>(GetValOf());
+            }
         };
 
         class DriverOptionTable
@@ -54,7 +61,7 @@ namespace GTFW
             DriverOption* Lookup(std::string Key);
         };
 
-#define DEF_DRV_OPTION(Table, Name, Key, Desc, Level) DriverOption Name = DriverOption(Table, Key, Desc, Level);
+#define DEF_DRV_OPTION(Table, Name, Key, Init, Desc, Level) DriverOption Name = DriverOption(Table, Key, Init, Desc, Level);
     }
 }
 
