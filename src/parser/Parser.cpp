@@ -1,7 +1,7 @@
 #include "parser/Parser.h"
 #include "parser/TokenVerifier.h"
 
-namespace GTFW
+namespace Goto
 {
     namespace Parser
     {

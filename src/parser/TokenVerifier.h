@@ -1,9 +1,9 @@
-#ifndef __GFWK_C_FRONTEND_PARSER_TOKEN_VERIFIER_H__
-#define __GFWK_C_FRONTEND_PARSER_TOKEN_VERIFIER_H__
+#ifndef __GTFW_C_FRONTEND_PARSER_TOKEN_VERIFIER_H__
+#define __GTFW_C_FRONTEND_PARSER_TOKEN_VERIFIER_H__
 
 #include <string>
 
-namespace GTFW
+namespace Goto
 {
     namespace Parser
     {

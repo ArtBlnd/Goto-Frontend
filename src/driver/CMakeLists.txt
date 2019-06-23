@@ -1,5 +1,5 @@
 
-add_library(gtfw-driver STATIC
+add_library(goto-driver STATIC
     CommandLine.cpp
     CommandLine.h
     Driver.cpp
@@ -8,4 +8,4 @@ add_library(gtfw-driver STATIC
     DriverOption.h
 )
 
-target_link_libraries(gtfw-driver gtfw-parser)
+target_link_libraries(goto-driver goto-parser)

@@ -1,6 +1,6 @@
 #include "parser/TokenVerifier.h"
 
-namespace GTFW
+namespace Goto
 {
     bool Parser::tvIsInteger(const std::string& str)
     {

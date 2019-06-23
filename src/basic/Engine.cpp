@@ -1,6 +1,6 @@
 #include "basic/Engine.h"
 
-namespace GTFW
+namespace Goto
 {
     namespace Basic
     {

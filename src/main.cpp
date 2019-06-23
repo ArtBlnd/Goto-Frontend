@@ -12,7 +12,7 @@
 #endif
 #define EXIT_SUCCESS 0x00000001
 
-namespace GTFW
+namespace Goto
 {
     int EntryPoint(int args, char** argv, char** envp)
     {
@@ -37,7 +37,7 @@ int main(int args, char** argv, char** envp)
 {
     try 
     {
-        return GTFW::EntryPoint(args, argv, envp);
+        return Goto::EntryPoint(args, argv, envp);
     }
     catch(std::exception e)
     {

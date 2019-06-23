@@ -6,7 +6,7 @@
 
 #include <filesystem>
 
-namespace GTFW
+namespace Goto
 {
     // TryParseInScope
     //   Try parse everything in the current scope for specal scope token,

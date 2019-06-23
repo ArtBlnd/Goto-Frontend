@@ -1,14 +1,14 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(GFWK_C_Frontend)
+project(GTFW_C_Frontend)
 
 #
 # Basic Goto-Framework Paths
 #
-set(GTFW_C_FRONTEND_SRC_PATH "${CMAKE_CURRENT_SOURCE_DIR}/src/")
-set(GTFW_C_FRONTEND_INC_PATH "${CMAKE_CURRENT_SOURCE_DIR}/src/")
-set(GTFW_C_FRONTEND_TEST_PATH "${CMAKE_CURRENT_SOURCE_DIR}/test/")
-set(GTFW_C_FRONTEND_DEPS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/deps/")
+set(Goto_C_FRONTEND_SRC_PATH "${CMAKE_CURRENT_SOURCE_DIR}/src/")
+set(Goto_C_FRONTEND_INC_PATH "${CMAKE_CURRENT_SOURCE_DIR}/src/")
+set(Goto_C_FRONTEND_TEST_PATH "${CMAKE_CURRENT_SOURCE_DIR}/test/")
+set(Goto_C_FRONTEND_DEPS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/deps/")
 
 #
 # Compiler Options.
@@ -25,8 +25,8 @@ endif()
 #
 # Directories
 #
-include_directories(${GTFW_C_FRONTEND_SRC_PATH})
-add_subdirectory(${GTFW_C_FRONTEND_INC_PATH})
+include_directories(${Goto_C_FRONTEND_SRC_PATH})
+add_subdirectory(${Goto_C_FRONTEND_INC_PATH})
 
 #
 # Testing Options.
@@ -34,5 +34,5 @@ add_subdirectory(${GTFW_C_FRONTEND_INC_PATH})
 option(ENABLE_TESTS "Enables building tests using GTest" ON)
 if(ENABLE_TESTS)
     include(cmake/AddTest.cmake)
-    add_subdirectory(${GTFW_C_FRONTEND_TEST_PATH})
+    add_subdirectory(${Goto_C_FRONTEND_TEST_PATH})
 endif()

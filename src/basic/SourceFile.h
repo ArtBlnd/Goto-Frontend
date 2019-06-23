@@ -1,9 +1,9 @@
-#ifndef __GFWK_C_FRONTEND_BASIC_SOURCE_FILE_H__
-#define __GFWK_C_FRONTEND_BASIC_SOURCE_FILE_H__
+#ifndef __GTFW_C_FRONTEND_BASIC_SOURCE_FILE_H__
+#define __GTFW_C_FRONTEND_BASIC_SOURCE_FILE_H__
 
 #include <string>
 
-namespace GFWK
+namespace GTFW
 {
     namespace Basic
     {

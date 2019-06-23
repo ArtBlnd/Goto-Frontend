@@ -1,6 +1,6 @@
 #include "driver/DriverOption.h"
 
-namespace GTFW
+namespace Goto
 {
     namespace Driver
     {

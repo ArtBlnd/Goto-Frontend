@@ -3,7 +3,7 @@
 
 #include <string>
 
-namespace GTFW
+namespace Goto
 {
     namespace Engine
     {

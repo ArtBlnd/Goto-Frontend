@@ -1,7 +1,7 @@
 #ifndef __GTFW_C_FRONTEND_DRIVER_DRIVER_H__
 #define __GTFW_C_FRONTEND_DRIVER_DRIVER_H__
 
-namespace GTFW
+namespace Goto
 {
     namespace Driver
     {

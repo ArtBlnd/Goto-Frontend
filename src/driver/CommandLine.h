@@ -1,11 +1,11 @@
-#ifndef __GFWK_C_FRONTEND_DRIVER_COMMANDLINE_H__
-#define __GFWK_C_FRONTEND_DRIVER_COMMANDLINE_H__
+#ifndef __GTFW_C_FRONTEND_DRIVER_COMMANDLINE_H__
+#define __GTFW_C_FRONTEND_DRIVER_COMMANDLINE_H__
 
 #include <vector>
 #include <string>
 #include "driver/DriverOption.h"
 
-namespace GTFW
+namespace Goto
 {
     namespace Driver
     {

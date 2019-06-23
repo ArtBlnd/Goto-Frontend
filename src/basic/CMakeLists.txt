@@ -1,4 +1,4 @@
-add_library(gtfw-basic STATIC
+add_library(goto-basic STATIC
     Engine.cpp
     Engine.h
     SourceFile.cpp

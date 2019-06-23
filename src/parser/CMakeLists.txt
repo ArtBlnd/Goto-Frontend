@@ -1,5 +1,5 @@
 
-add_library(gtfw-parser STATIC
+add_library(goto-parser STATIC
     Parser.cpp
     Parser.h
     TokenVerifier.cpp

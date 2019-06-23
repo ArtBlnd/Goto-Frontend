@@ -1,9 +1,9 @@
-#ifndef __GFWK_C_FRONTEND_BASIC_ENGINE_H__
-#define __GFWK_C_FRONTEND_BASIC_ENGINE_H__
+#ifndef __GTFW_C_FRONTEND_BASIC_ENGINE_H__
+#define __GTFW_C_FRONTEND_BASIC_ENGINE_H__
 
 #include <memory>
 
-namespace GTFW
+namespace Goto
 {
     namespace Basic
     {
