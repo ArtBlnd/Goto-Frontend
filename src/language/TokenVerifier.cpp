@@ -1,4 +1,4 @@
-#include "parser/TokenVerifier.h"
+#include "language/TokenVerifier.h"
 
 namespace Goto
 {

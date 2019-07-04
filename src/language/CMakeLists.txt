@@ -1,5 +1,5 @@
 
-add_library(goto-parser STATIC
+add_library(goto-language STATIC
     Parser.cpp
     Parser.h
     TokenVerifier.cpp

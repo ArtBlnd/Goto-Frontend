@@ -1,5 +1,5 @@
-#ifndef __GTFW_C_FRONTEND_PARSER_PARSER_H__
-#define __GTFW_C_FRONTNED_PARSER_PARSER_H__
+#ifndef __GOTO_C_FROTNEND_LANGUAGE_LEXER_H__
+#define __GOTO_C_FRONTEND_LANGUAGE_LEXER_H__
 
 #include <string>
 
@@ -10,7 +10,7 @@ namespace Goto
         class Engine;
     }
 
-    namespace Parser
+    namespace Language
     {
         class TokenUnknown;
         class TokenLiteral;
@@ -20,11 +20,11 @@ namespace Goto
 
         enum class TokenType
         {
-            TOKEN_UNKNOWN       = 0xFF,
-            TOKEN_LITERAL       = 0x01,
-            TOKEN_SYMBOL        = 0x02,
-            TOKEN_IDENTIFIER    = 0x03,
-            TOKEN_WHITESPACE    = 0x04
+            TOKEN_UNKNOWN = 0xFF,
+            TOKEN_LITERAL = 0x01,
+            TOKEN_SYMBOL = 0x02,
+            TOKEN_IDENTIFIER = 0x03,
+            TOKEN_WHITESPACE = 0x04
         };
 
         // class Token
@@ -89,7 +89,7 @@ namespace Goto
         {
             friend class TokenContext;
             std::string m_tkLiteral;
-            
+
         protected:
             TokenLiteral(size_t Line, size_t Column, std::string LiteralToken);
 
@@ -176,7 +176,7 @@ namespace Goto
         };
 
         // Tokenlize source code to TokenContext
-        bool psTokenlizeSourceCode(TokenContext* context, void* sourceFileBuf, size_t sourceFileSz);
+        bool lxTokenlizeSourceCode(TokenContext* context, void* sourceFileBuf, size_t sourceFileSz);
 
         // Compute token to token width
         // for example
@@ -185,18 +185,18 @@ namespace Goto
         //        |     |
         //        T1    T2
         // returning size of first char 'v' to last T1 char of 'c'. so its 10
-        size_t psComputeT2TWidth(const Token* token1, const Token* token2);
+        size_t lxComputeT2TWidth(const Token* token1, const Token* token2);
 
 
         // Transform string to boolean
         // "true" | "1" will transform to boolean true
         // "false" | "0" will transform to boolean false
-        bool psStr2BoolTransform(const std::string& str);
+        bool lxStr2BoolTransform(const std::string& str);
 
         // Transform string to integer
         // for example. string "1040" will transform into 1040 int value
         // emit exception if its overflow.
-        int psStr2IntegerTransform(const std::string& str);
+        int lxStr2IntegerTransform(const std::string& str);
     }
 }
 
