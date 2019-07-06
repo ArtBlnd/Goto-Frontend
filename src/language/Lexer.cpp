@@ -1,4 +1,5 @@
-#include "language/lexer.h"
+#include "language/Lexer.h"
+#include "language/TokenVerifier.h"
 
 namespace Goto
 {
@@ -316,33 +317,6 @@ namespace Goto
             }
 
             return offEnd - offBegin;
-        }
-
-        bool lxStr2BoolTransform(const std::string& str)
-        {
-            if (str.length() == 1)
-            {
-                return str[0] == '1';
-            }
-
-            if (str == "true")
-            {
-                return true;
-            }
-            if (str == "false")
-            {
-                return false;
-            }
-
-            // Unknown token for boolean transformation
-            // emit exeception.
-            return false;
-        }
-
-        int lxStr2IntegerTransform(const std::string& str)
-        {
-            // TODO : self-implements.
-            return std::atoi(str.c_str());
         }
     }
 }

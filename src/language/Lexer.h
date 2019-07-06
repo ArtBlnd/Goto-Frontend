@@ -187,16 +187,6 @@ namespace Goto
         // returning size of first char 'v' to last T1 char of 'c'. so its 10
         size_t lxComputeT2TWidth(const Token* token1, const Token* token2);
 
-
-        // Transform string to boolean
-        // "true" | "1" will transform to boolean true
-        // "false" | "0" will transform to boolean false
-        bool lxStr2BoolTransform(const std::string& str);
-
-        // Transform string to integer
-        // for example. string "1040" will transform into 1040 int value
-        // emit exception if its overflow.
-        int lxStr2IntegerTransform(const std::string& str);
     }
 }
 

@@ -1,8 +1,8 @@
 #include "pch.h"
 
 #include "driver/CommandLine.h"
-#include "parser/TokenVerifier.h"
-#include "parser/Parser.h"
+#include "language/TokenVerifier.h"
+#include "language/Transform.h"
 
 #include <filesystem>
 
@@ -58,15 +58,15 @@ namespace Goto
         {
             std::string& strVal = Val[0];
 
-            if (Parser::tvIsInteger(strVal))
+            if (Language::tvIsInteger(strVal))
             {
-                Option->SetValue(Parser::psStr2IntegerTransform(strVal));
+                Option->SetValue(Language::tfStr2IntegerTransform(strVal));
                 return;
             }
 
-            if (Parser::tvIsBoolean(strVal))
+            if (Language::tvIsBoolean(strVal))
             {
-                Option->SetValue(Parser::psStr2BoolTransform(strVal));
+                Option->SetValue(Language::tfStr2BoolTransform(strVal));
                 return;
             }
 
@@ -88,7 +88,7 @@ namespace Goto
         {
             char c = argsLine[i];
 
-            if (Parser::tvIsDoubleQuote(c) || Parser::tvIsSingleQuote(c))
+            if (Language::tvIsDoubleQuote(c) || Language::tvIsSingleQuote(c))
             {
                 if (isOnValScope)
                 {
@@ -99,7 +99,7 @@ namespace Goto
                 EmitArgumentParseException(i, c);
             }
 
-            if (Parser::tvIsDash(c))
+            if (Language::tvIsDash(c))
             {
                 if (isOnKeyScope || isOnValScope)
                 {
@@ -111,7 +111,7 @@ namespace Goto
                 continue;
             }
 
-            if (Parser::tvIsEqualSym(c))
+            if (Language::tvIsEqualSym(c))
             {
                 if (isOnKeyScope)
                 {
@@ -123,7 +123,7 @@ namespace Goto
                 EmitArgumentParseException(i, c);
             }
 
-            if (Parser::tvIsComma(c) || Parser::tvIsSemicolon(c))
+            if (Language::tvIsComma(c) || Language::tvIsSemicolon(c))
             {
                 if (isOnValScope)
                 {
@@ -138,7 +138,7 @@ namespace Goto
                 EmitArgumentParseException(i, c);
             }
 
-            if (Parser::tvIsSpace(c))
+            if (Language::tvIsSpace(c))
             {
                 if (!Val.empty())
                 {

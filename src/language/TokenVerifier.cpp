@@ -2,7 +2,7 @@
 
 namespace Goto
 {
-    bool Parser::tvIsInteger(const std::string& str)
+    bool Language::tvIsInteger(const std::string& str)
     {
         for (char c : str)
         {
@@ -17,7 +17,7 @@ namespace Goto
         return true;
     }
 
-    bool Parser::tvIsBoolean(const std::string& str)
+    bool Language::tvIsBoolean(const std::string& str)
     {
         if (str == "true" || str == "1" || str == "false" || str == "0")
         {
@@ -27,7 +27,7 @@ namespace Goto
         return false;
     }
 
-    bool Parser::tvIsAlphabet(const std::string& str)
+    bool Language::tvIsAlphabet(const std::string& str)
     {
         for (char c : str)
         {

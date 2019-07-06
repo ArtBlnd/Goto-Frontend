@@ -5,7 +5,7 @@
 
 namespace Goto
 {
-    namespace Parser
+    namespace Language
     {
         // Token Verifier
         // Type: '\"' (DOUBLE_QUOTE)
