@@ -15,12 +15,13 @@ namespace Goto
             //
             // Initialize Options
             //
-
             engineBuilder.ebOptimziationLevel =
                 CLIContext->doOptLevel1.GetValOf<bool>() ? Basic::EngineOptLevel::MINIMIZED_OPT :
                 CLIContext->doOptLevel2.GetValOf<bool>() ? Basic::EngineOptLevel::SMALL_CODE_OPT :
                 CLIContext->doOptLevel3.GetValOf<bool>() ? Basic::EngineOptLevel::FULL_OPT :
                 Basic::EngineOptLevel::NO_OPT;
+
+            engineBuilder.ebCompileInfo->m_ciSourceFile = std::move(CLIContext->m_clcTargetSourceFile);
         }
         catch (std::bad_any_cast& bc)
         {
@@ -29,8 +30,6 @@ namespace Goto
         }
         
         std::unique_ptr<Basic::Engine> engine = engineBuilder.BuildEngine();
-        engine->SetEnginePhase(Basic::EnginePhase::STAGE_INIT);
-
         return engine->StartCompile();
     }
 }

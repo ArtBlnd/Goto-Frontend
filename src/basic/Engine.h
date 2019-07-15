@@ -2,6 +2,7 @@
 #define __GTFW_C_FRONTEND_BASIC_ENGINE_H__
 
 #include <memory>
+#include <basic/CompileInfo.h>
 
 namespace Goto
 {
@@ -20,27 +21,38 @@ namespace Goto
         enum EnginePhase
         {
             STAGE_INIT          = 0x01, 
-            STAGE_TOKENLIZE     = 0x02, 
-            STAGE_PARSE         = 0x03,
-            STAGE_AST_TO_CG     = 0x04, // AST tree to Code-Generation.
+            STAGE_TOKENLIZE     = 0x02,
+            STAGE_LEXING        = 0x03,
+            STAGE_PARSE         = 0x04,
+            STAGE_AST_TO_CG     = 0x05, // AST tree to Code-Generation.
         };
 
         struct EngineBuilder
         {
             EngineOptLevel ebOptimziationLevel;
+            CompileInfo* ebCompileInfo = new CompileInfo();
 
             std::unique_ptr<Engine> BuildEngine();
         };
 
         class Engine
         {
-            const size_t EngineStageCnt = 4;
+            const size_t EngineStageCnt = 5;
 
         protected:
-            EnginePhase m_egStage;
-            EngineOptLevel m_egOpts;
+            //
+            // Major compiler informations
+            //
+            EngineOptLevel               m_egCompOpts;
+            EnginePhase                  m_egCompStage;
+            std::shared_ptr<CompileInfo> m_egCompInfo;
 
-            Engine();
+            //
+            // Constructors and Distructors
+            //
+            explicit Engine() = delete;
+            explicit Engine(EngineBuilder* builder);
+            ~Engine() = default;
             
         public:
             // Get current compiler engine phase
@@ -51,6 +63,8 @@ namespace Goto
 
             // Get global compiler optimziation level
             EngineOptLevel GetEngineOptLevel() const;
+
+            const CompileInfo* LookupCompileInfo();
 
             bool StartCompile();
         };
