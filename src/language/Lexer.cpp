@@ -300,6 +300,11 @@ namespace Goto
             return false;
         }
 
+        bool lxResolveAndApplyMacros(TokenContext* context)
+        {
+            return false;
+        }
+
         size_t lxComputeT2TWidth(const Token* token1, const Token* token2)
         {
             size_t offBegin = token1->GetColumn();

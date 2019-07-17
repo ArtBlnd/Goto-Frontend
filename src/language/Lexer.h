@@ -177,6 +177,9 @@ namespace Goto
 
         // Tokenlize source code to TokenContext
         bool lxTokenlizeSourceCode(TokenContext* context, void* sourceFileBuf, size_t sourceFileSz);
+        
+        // Resolves macro tokens and apply it
+        bool lxResolveAndApplyMacros(TokenContext* context);
 
         // Compute token to token width
         // for example

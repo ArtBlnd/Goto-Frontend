@@ -1,4 +1,6 @@
 #include "basic/Engine.h"
+#include "language/Lexer.h"
+#include "language/Parser.h"
 
 namespace Goto
 {
@@ -42,8 +44,22 @@ namespace Goto
 
         bool Engine::StartCompile()
         {
-            this->SetEnginePhase(EnginePhase::STAGE_TOKENLIZE);
+            this->SetEnginePhase(EnginePhase::STAGE_INIT);
+            void*  srcFileBuf;
+            size_t srcFileSize;
 
+            this->SetEnginePhase(EnginePhase::STAGE_TOKENLIZE);
+            Language::TokenContext tokenContext;
+            if (!Language::lxTokenlizeSourceCode(&tokenContext, srcFileBuf, srcFileSize))
+            {
+                // TODO : internal exception.
+            }
+
+            if (!Language::lxResolveAndApplyMacros(&tokenContext))
+            {
+                // TODO : internal exception.
+            }
+            
             return false;
         }
     }
