@@ -50,5 +50,20 @@ namespace Goto
         {
             return std::filesystem::file_size(filePath);
         }
+
+        bool fuFileExists(std::string filePath, std::string basePath)
+        {
+            return fuFileExists(fuGetFullFilePath(filePath, basePath));
+        }
+
+        std::string fuGetFullFilePath(std::string filePath, std::string basePath)
+        {
+            if (basePath.back() == '\\' || basePath.back() == '/')
+            {
+                return basePath + filePath;
+            }
+
+            return basePath + "/" + filePath;
+        }
     }
 }

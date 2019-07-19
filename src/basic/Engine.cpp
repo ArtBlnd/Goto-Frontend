@@ -48,7 +48,6 @@ namespace Goto
         //
         // Compile Section
         //
-
         bool Engine::StartCompile()
         {
             //
