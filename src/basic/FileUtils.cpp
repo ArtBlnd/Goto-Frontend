@@ -16,7 +16,7 @@ namespace Goto
 
         FileReader::~FileReader()
         {
-            delete m_frCachedBuf;
+            FreeCache();
         }
 
         void FileReader::OpenAndCache()
@@ -45,6 +45,10 @@ namespace Goto
             return m_frSize;
         }
 
+        void FileReader::FreeCache()
+        {
+            delete m_frCachedBuf;
+        }
 
         bool fuFileExists(std::string filePath)
         {
