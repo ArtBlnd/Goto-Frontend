@@ -7,7 +7,7 @@ namespace Goto
 {
     namespace Basic
     {
-        class FileReader
+        class FileViewer
         {
             std::string m_frName;
             size_t      m_frSize;
@@ -16,20 +16,29 @@ namespace Goto
 
             void OpenAndCache();
         public:
-            FileReader() = delete;
-            FileReader(std::string fileName);
-            ~FileReader();
+            FileViewer() = delete;
+            FileViewer(std::string fileName);
+            ~FileViewer();
 
+            // Read file buffer and cache, return it.
             char* GetBuffer();
+
+            // Free buffer caches to reload it
+            void FreeCache();
 
             const std::string& GetFileName() const;
             size_t GetFileSize() const;
         };
 
+        // Check that file exists. true means its exists.
         bool fuFileExists(std::string filePath);
         bool fuFileExists(std::string filePath, std::string basePath);
 
+        // Get full file path based on basePath which means returning absolute path.
         std::string fuGetFullFilePath(std::string filePath, std::string basePath);
+
+        // Get file extension from file name.
+        std::string fuGetFileExts(std::string fileName);
     }
 }
 

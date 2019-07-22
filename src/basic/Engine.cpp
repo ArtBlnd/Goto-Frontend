@@ -44,7 +44,6 @@ namespace Goto
             return m_egCompOpts;
         }
 
-
         //
         // Compile Section
         //
@@ -87,7 +86,7 @@ namespace Goto
             // 
             // Source reading stage
             //
-            FileReader sourceFileReader = FileReader(filePath);
+            FileViewer sourceFileReader = FileViewer(filePath);
 
 
             //

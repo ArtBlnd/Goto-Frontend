@@ -8,23 +8,31 @@ namespace Goto
 {
     namespace Basic
     {
-        FileReader::FileReader(std::string fileName)
+        FileViewer::FileViewer(std::string fileName)
         {
             m_frName = std::move(fileName);
             m_frSize = std::filesystem::file_size(fileName);
         }
 
-        FileReader::~FileReader()
+        FileViewer::~FileViewer()
         {
             FreeCache();
         }
 
-        void FileReader::OpenAndCache()
+        void FileViewer::OpenAndCache()
         {
             m_frCachedBuf = new char[m_frSize];
+
+            {
+                std::ifstream fileStream;
+
+                fileStream.open(m_frName);
+                fileStream.read(m_frCachedBuf, m_frSize);
+                fileStream.close();
+            }
         }
 
-        char* FileReader::GetBuffer()
+        char* FileViewer::GetBuffer()
         {
             // Read and cache file before we are returning buffer.
             if (m_frCachedBuf == nullptr)
@@ -35,17 +43,17 @@ namespace Goto
             return m_frCachedBuf;
         }
 
-        const std::string& FileReader::GetFileName() const
+        const std::string& FileViewer::GetFileName() const
         {
             return m_frName;
         }
 
-        size_t FileReader::GetFileSize() const
+        size_t FileViewer::GetFileSize() const
         {
             return m_frSize;
         }
 
-        void FileReader::FreeCache()
+        void FileViewer::FreeCache()
         {
             delete m_frCachedBuf;
         }
@@ -68,6 +76,35 @@ namespace Goto
             }
 
             return basePath + "/" + filePath;
+        }
+
+        std::string fuGetFileExts(std::string fileName)
+        {
+            bool isRecording = false;
+            std::string ext = "";
+
+            for (char c : fileName)
+            {
+                if (c == '.')
+                {
+                    isRecording = true;
+                }
+
+                // The path name can be starting with '.'
+                // we only records that filename's extensions.
+                if (c == '\\' || c == '/')
+                {
+                    isRecording = false;
+                    ext.clear();
+                }
+
+                if (isRecording)
+                {
+                    ext += c;
+                }
+            }
+
+            return ext;
         }
     }
 }
