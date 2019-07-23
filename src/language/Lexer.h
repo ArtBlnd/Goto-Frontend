@@ -12,19 +12,66 @@ namespace Goto
 
     namespace Language
     {
+        class Token;
         class TokenUnknown;
         class TokenLiteral;
         class TokenSymbol;
         class TokenIdentifier;
         class TokenWhitespace;
 
+        enum class MacroType
+        {
+            MACRO_UNKNOWN       = 0xFF,
+            MACRO_DEFINE        = 0x01,
+            MACRO_UNDEF         = 0x02,
+            MACRO_IF            = 0x03,
+            MACRO_ELSE          = 0x04,
+            MACRO_ELSE_IF       = 0x05,
+            MACRO_IFDEF         = 0x06,
+            MACRO_IFNDEF        = 0x07,
+            MACRO_ENDIF         = 0x08,
+            MACRO_DEFINED       = 0x09
+        };
+
+        class Macro
+        {
+            MacroType m_mcrType = MacroType::MACRO_UNKNOWN;
+            size_t    m_mcrSize = 0;
+            size_t    m_mcrLine = 0;
+            size_t    m_mcrColumn = 0;
+
+            Token* m_mcrNextToken = nullptr;
+            Token* m_mcrPrivToken = nullptr;
+
+        protected:
+            Macro() = delete;
+            Macro(MacroType type, size_t size, size_t line, size_t column);
+            virtual ~Macro() = default;
+
+        public:
+            Token* GetNextToken();
+            Token* GetPrivToken();
+        };
+
+        class MacroContext
+        {
+            Macro* m_mcMacroStart;
+            Macro* m_mcMacroEnd;
+
+        public:
+            Macro* GetPredefDate();
+            Macro* GetPredefFile();
+            Macro* GetPredefLine(Token* targetToken);
+            Macro* GetPredefTime();
+        };
+
         enum class TokenType
         {
-            TOKEN_UNKNOWN = 0xFF,
-            TOKEN_LITERAL = 0x01,
-            TOKEN_SYMBOL = 0x02,
-            TOKEN_IDENTIFIER = 0x03,
-            TOKEN_WHITESPACE = 0x04
+            TOKEN_UNKNOWN       = 0xFF,
+            TOKEN_LITERAL       = 0x01,
+            TOKEN_SYMBOL        = 0x02,
+            TOKEN_IDENTIFIER    = 0x03,
+            TOKEN_WHITESPACE    = 0x04
         };
 
         // class Token
