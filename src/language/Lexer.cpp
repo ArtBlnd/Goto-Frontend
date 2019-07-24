@@ -295,12 +295,12 @@ namespace Goto
         }
 
 
-        bool lxTokenlizeSourceCode(TokenContext* context, void* sourceFileBuf, size_t sourceFileSz)
+        bool lxTokenlizeSourceCode(TokenContext* tokenContext, MacroContext* macroContext, void* sourceFileBuf, size_t sourceFileSz)
         {
             return false;
         }
 
-        bool lxResolveAndApplyMacros(TokenContext* context)
+        bool lxResolveAndApplyMacros(TokenContext* tokenContext, MacroContext* macroContext)
         {
             return false;
         }
