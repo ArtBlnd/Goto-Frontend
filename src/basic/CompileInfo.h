@@ -11,6 +11,10 @@ namespace Goto
         std::string m_ciSourcePath;
 
         std::string m_ciEntryPoint;
+
+
+        bool m_ciVerbose = false;
+        bool m_ciDumpAst = false;
     };
 }
 

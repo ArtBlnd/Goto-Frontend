@@ -6,6 +6,11 @@
 
 namespace Goto
 {
+    namespace Driver
+    {
+        class CommandLineContext;
+    }
+    
     namespace Basic
     {
         class Engine;
@@ -20,26 +25,29 @@ namespace Goto
 
         enum EnginePhase
         {
-            STAGE_INIT          = 0x01, 
-            STAGE_TOKENLIZE     = 0x02,
-            STAGE_LEXING        = 0x03,
-            STAGE_PARSE         = 0x04,
-            STAGE_AST_TO_CG     = 0x05, // AST tree to Code-Generation.
+            STAGE_PRE_INIT      = 0x01,
+            STAGE_PST_INIT      = 0x02,
+            STAGE_TOKENLIZE     = 0x03,
+            STAGE_LEXING        = 0x04,
+            STAGE_PARSE         = 0x05,
+            STAGE_AST_TO_CG     = 0x06, // AST tree to Code-Generation.
         };
 
         struct EngineBuilder
         {
-            EngineOptLevel ebOptimziationLevel;
-            CompileInfo* ebCompileInfo = new CompileInfo();
+            EngineOptLevel ebCompOptLevel;
+            CompileInfo*   ebCompInfo = nullptr;
 
             std::unique_ptr<Engine> BuildEngine();
+
+            EngineBuilder();
+            ~EngineBuilder() = default;
         };
 
         class Engine
         {
-            const size_t EngineStageCnt = 5;
+            friend class EngineBuilder;
 
-        protected:
             //
             // Major compiler informations
             //
@@ -47,6 +55,7 @@ namespace Goto
             EnginePhase                  m_egCompStage;
             std::shared_ptr<CompileInfo> m_egCompInfo;
 
+        protected:
             //
             // Constructors and Distructors
             //
@@ -63,8 +72,6 @@ namespace Goto
 
             // Get global compiler optimziation level
             EngineOptLevel GetEngineOptLevel() const;
-
-            const CompileInfo* LookupCompileInfo();
 
             bool StartCompile();
         };

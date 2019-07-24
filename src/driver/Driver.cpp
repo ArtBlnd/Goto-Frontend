@@ -15,13 +15,17 @@ namespace Goto
             //
             // Initialize Options
             //
-            engineBuilder.ebOptimziationLevel =
+            engineBuilder.ebCompOptLevel =
                 CLIContext->doOptLevel1.GetValOf<bool>() ? Basic::EngineOptLevel::MINIMIZED_OPT :
                 CLIContext->doOptLevel2.GetValOf<bool>() ? Basic::EngineOptLevel::SMALL_CODE_OPT :
                 CLIContext->doOptLevel3.GetValOf<bool>() ? Basic::EngineOptLevel::FULL_OPT :
                 Basic::EngineOptLevel::NO_OPT;
 
-            engineBuilder.ebCompileInfo->m_ciSourceFile = std::move(CLIContext->m_clcTargetSourceFile);
+            CompileInfo* compInfo = engineBuilder.ebCompInfo;
+
+            compInfo->m_ciSourceFile = std::move(CLIContext->m_clcTargetSourceFile);
+            compInfo->m_ciVerbose    = CLIContext->doEnableVerbose.GetValOf<bool>();
+            compInfo->m_ciDumpAst    = CLIContext->doEnableASTDump.GetValOf<bool>();
         }
         catch (std::bad_any_cast& bc)
         {

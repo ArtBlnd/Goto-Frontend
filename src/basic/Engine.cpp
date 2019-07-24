@@ -13,9 +13,12 @@ namespace Goto
         //
         std::unique_ptr<Engine> EngineBuilder::BuildEngine()
         {
-            std::unique_ptr<Engine> engine;
+            return std::move(std::unique_ptr<Engine>(new Engine(this)));;
+        }
 
-            return std::move(engine);
+        EngineBuilder::EngineBuilder()
+        {
+            ebCompInfo = new CompileInfo();
         }
 
         //
@@ -23,9 +26,9 @@ namespace Goto
         //
         Engine::Engine(EngineBuilder* builder)
         {
-            m_egCompStage = EnginePhase::STAGE_INIT;
-            m_egCompOpts = builder->ebOptimziationLevel;
-            m_egCompInfo = std::shared_ptr<CompileInfo>(builder->ebCompileInfo);
+            m_egCompStage = EnginePhase::STAGE_PRE_INIT;
+            m_egCompOpts  = builder->ebCompOptLevel;
+            m_egCompInfo  = std::shared_ptr<CompileInfo>(builder->ebCompInfo);
         }
 
         EnginePhase Engine::GetEnginePhase() const
@@ -52,30 +55,30 @@ namespace Goto
             //
             // Initializing stage
             //
-            this->SetEnginePhase(EnginePhase::STAGE_INIT);
-            const CompileInfo* compileInfo = LookupCompileInfo();
+            this->SetEnginePhase(EnginePhase::STAGE_PST_INIT);
+            const std::string& compSrcName = m_egCompInfo->m_ciSourceFile;
+            const std::string& compSrcPath = m_egCompInfo->m_ciSourcePath;
+            std::string        compTargetPath = "";
 
             // 
             // Source finding stage
             //
-            std::string filePath;
-
-            if (fuFileExists(compileInfo->m_ciSourceFile))
+            if (fuFileExists(compSrcName))
             {
                 // Check that file exists on current path
                 // Or we are finding on path included file path
 
-                filePath = compileInfo->m_ciSourceFile;
+                compTargetPath = compSrcName;
             }
 
-            if (fuFileExists(compileInfo->m_ciSourcePath, compileInfo->m_ciSourcePath))
+            if (fuFileExists(compSrcPath, compSrcName))
             {
                 // We are getting full path of file.
 
-                filePath = fuGetFullFilePath(compileInfo->m_ciSourceFile, compileInfo->m_ciSourcePath);
+                compTargetPath = fuGetFullFilePath(compSrcPath, compSrcName);
             }
 
-            if (filePath.empty())
+            if (compTargetPath.empty())
             {
                 // We couldn't find source file even we tried to find on absolute path
                 // TODO : internal exception.
@@ -86,20 +89,24 @@ namespace Goto
             // 
             // Source reading stage
             //
-            FileViewer sourceFileReader = FileViewer(filePath);
+            FileViewer sourceFileReader = FileViewer(compTargetPath);
 
+            if (sourceFileReader.GetFileSize() == 0)
+            {
+                return false;
+            }
 
             //
             // Source tokenize and lexing stage.
             //
             this->SetEnginePhase(EnginePhase::STAGE_TOKENLIZE);
             Language::TokenContext tokenContext;
+            Language::MacroContext macroContext;
 
             // Read source code and tokenlize it (includes macros)
             // We are resolving macros after tokenlize it.
             if (!Language::lxTokenlizeSourceCode(
-                &tokenContext, 
-                sourceFileReader.GetBuffer(), 
+                &tokenContext, &macroContext, sourceFileReader.GetBuffer(), 
                 sourceFileReader.GetFileSize()))
             {
                 // TODO : internal exception.
@@ -107,14 +114,15 @@ namespace Goto
                 return false;
             }
 
-            if (!Language::lxResolveAndApplyMacros(&tokenContext))
+            this->SetEnginePhase(EnginePhase::STAGE_LEXING);
+            if (!Language::lxResolveAndApplyMacros(&tokenContext, &macroContext))
             {
                 // TODO : internal exception.
 
                 return false;
             }
             
-            return false;
+            return true;
         }
     }
 }
