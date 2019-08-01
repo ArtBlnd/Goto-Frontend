@@ -125,6 +125,11 @@ namespace Goto
         // Token Verifier
         // Type : 'a > | z <' (ALPHABET)
         bool tvIsAlphabet(const std::string& str);
+        bool tvIsAlphabet(const char c);
+
+        // Fast token comparer if its under 16 bytes.
+        // this use normalization which is change 16 byte char array into integer and compare.
+        bool tvFastStrCmp16(const std::string& str1, const std::string& str2);
     }
 }
 

@@ -46,4 +46,19 @@ namespace Goto
 
         return true;
     }
+
+    bool Language::tvIsAlphabet(const char c)
+    {
+        if (c >= 'a' && c <= 'z')
+        {
+            return true;
+        }
+
+        if (c >= 'A' && c <= 'Z')
+        {
+            return true;
+        }
+        
+        return false;
+    }
 }
