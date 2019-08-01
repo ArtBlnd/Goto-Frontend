@@ -1,5 +1,6 @@
 #include "basic/Engine.h"
 #include "basic/FileUtils.h"
+#include "basic/Debug.h"
 
 #include "language/Lexer.h"
 #include "language/Parser.h"
@@ -81,8 +82,7 @@ namespace Goto
             if (compTargetPath.empty())
             {
                 // We couldn't find source file even we tried to find on absolute path
-                // TODO : internal exception.
-
+                noway_assert(true, "[INTERNAL] Failed to find source file");
                 return false;
             }
 
@@ -93,6 +93,7 @@ namespace Goto
 
             if (sourceFileReader.GetFileSize() == 0)
             {
+                noway_assert(true, "[INTERNAL] Size of target source file is zero");
                 return false;
             }
 
@@ -109,8 +110,7 @@ namespace Goto
                 &tokenContext, &macroContext, sourceFileReader.GetBuffer(), 
                 sourceFileReader.GetFileSize()))
             {
-                // TODO : internal exception.
-
+                noway_assert(true, "[INTERNAL] Failed to tokenlize source code");
                 return false;
             }
             
