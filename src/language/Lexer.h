@@ -27,9 +27,9 @@ namespace Goto
             MACRO_IF            = 0x03,
             MACRO_ELSE          = 0x04,
             MACRO_ELSE_IF       = 0x05,
-            MACRO_IFDEF         = 0x06,
-            MACRO_IFNDEF        = 0x07,
-            MACRO_ENDIF         = 0x08,
+            MACRO_IF_DEF        = 0x06,
+            MACRO_IF_NOT_DEF    = 0x07,
+            MACRO_END_IF        = 0x08,
             MACRO_DEFINED       = 0x09
         };
 
@@ -223,11 +223,8 @@ namespace Goto
         };
 
         // Tokenlize source code to TokenContext
-        bool lxTokenlizeSourceCode(TokenContext* tokenContext, MacroContext* macroContext, void* sourceFileBuf, size_t sourceFileSz);
+        bool lxTokenlizeSourceCode(TokenContext* tokenContext, MacroContext* macroContext, const char* srcFileBuf, size_t srcFileLen);
         
-        // Resolves macro tokens and apply it
-        bool lxResolveAndApplyMacros(TokenContext* tokenContext, MacroContext* macroContext);
-
         // Compute token to token width
         // for example
         //      void* Func();
