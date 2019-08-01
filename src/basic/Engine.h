@@ -28,9 +28,8 @@ namespace Goto
             STAGE_PRE_INIT      = 0x01,
             STAGE_PST_INIT      = 0x02,
             STAGE_TOKENLIZE     = 0x03,
-            STAGE_LEXING        = 0x04,
-            STAGE_PARSE         = 0x05,
-            STAGE_AST_TO_CG     = 0x06, // AST tree to Code-Generation.
+            STAGE_PARSE         = 0x04,
+            STAGE_AST_TO_CG     = 0x05, // AST tree to Code-Generation.
         };
 
         struct EngineBuilder

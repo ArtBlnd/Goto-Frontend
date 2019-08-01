@@ -113,14 +113,6 @@ namespace Goto
 
                 return false;
             }
-
-            this->SetEnginePhase(EnginePhase::STAGE_LEXING);
-            if (!Language::lxResolveAndApplyMacros(&tokenContext, &macroContext))
-            {
-                // TODO : internal exception.
-
-                return false;
-            }
             
             return true;
         }
