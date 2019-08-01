@@ -54,6 +54,12 @@ namespace Goto
             EnginePhase                  m_egCompStage;
             std::shared_ptr<CompileInfo> m_egCompInfo;
 
+            //
+            // Indicator informations
+            //
+            size_t m_egLexerTokens = 0;
+            size_t m_egLexerMacros = 0;
+
         protected:
             //
             // Constructors and Distructors
