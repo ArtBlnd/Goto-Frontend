@@ -294,16 +294,124 @@ namespace Goto
             return sizeof(Token) + 32;
         }
 
-
-        bool lxTokenlizeSourceCode(TokenContext* tokenContext, MacroContext* macroContext, void* sourceFileBuf, size_t sourceFileSz)
+        // Macro keyword token table.
+        namespace MacroKeyword
         {
+            const std::string MK_DEFINE     = "define";
+            const std::string MK_UNDEF      = "undef";
+            const std::string MK_IF         = "if";
+            const std::string MK_ELSE       = "else";
+            const std::string MK_ELSE_IF    = "elif";
+            const std::string MK_IF_DEF     = "ifdef";
+            const std::string MK_IF_NOT_DEF = "ifndef";
+            const std::string MK_END_IF     = "endif";
+            const std::string MK_DEFINED    = "defined";
+        }
+
+        /* lxTokenlizeMacro
+         *
+         * Description:
+         *      Parse macro tokens and records in mContext table.
+         *      so that we can use macros when we are tokenlizing target source file.
+         * Params :
+         *      - mContext : context that conatins current parsed macros in this instance
+         *      - srcFileBuf : target source file buffer
+         *      - srcFileLen : target source file length
+         *      - index : curret reading index
+         * Returns : size that read from srcFileBuf in this function to check what is next.
+         */
+        size_t lxTokenlizeMacro(MacroContext* mContext, const char* srcFileBuf, size_t srcFileLen, size_t index)
+        {
+            size_t      macroTotalRead = 0;
+            std::string macroToken;
+
+            for (; index < srcFileLen; ++index)
+            {
+                char c = srcFileBuf[index];
+                if (!tvIsSpace(c))
+                {
+                    if (!tvIsAlphabet(c))
+                    {
+                        // TODO : unknown charactor indicator.
+                    }
+                    macroToken += c;
+                }
+
+                break;
+            }
+
+            // Size that we read in macro indentifier.
+            // also adding 1 because of space.
+            macroTotalRead += macroToken.size() + 1;
+
+            if (tvFastStrCmp16(macroToken, MacroKeyword::MK_DEFINE))
+            {
+
+            }
+
+            else if (tvFastStrCmp16(macroToken, MacroKeyword::MK_UNDEF))
+            {
+
+            }
+
+            else if (tvFastStrCmp16(macroToken, MacroKeyword::MK_IF))
+            {
+
+            }
+
+            else if (tvFastStrCmp16(macroToken, MacroKeyword::MK_ELSE))
+            {
+
+            }
+
+            else if (tvFastStrCmp16(macroToken, MacroKeyword::MK_ELSE_IF))
+            {
+
+            }
+
+            else if (tvFastStrCmp16(macroToken, MacroKeyword::MK_IF_DEF))
+            {
+
+            }
+
+            else if (tvFastStrCmp16(macroToken, MacroKeyword::MK_IF_NOT_DEF))
+            {
+
+            }
+
+            else if (tvFastStrCmp16(macroToken, MacroKeyword::MK_END_IF))
+            {
+
+            }
+
+            else if (tvFastStrCmp16(macroToken, MacroKeyword::MK_DEFINED))
+            {
+
+            }
+
+            return macroTotalRead;
+        }
+
+        bool lxTokenlizeSourceCode(TokenContext* tContext, MacroContext* mContext, const char* srcFileBuf, size_t srcFileLen)
+        {
+            for (size_t index = 0; index < srcFileLen; ++index)
+            {
+                char c = srcFileBuf[index];
+
+                if (tvIsSharp(c)) 
+                {
+                    index += lxTokenlizeMacro(mContext, srcFileBuf, srcFileLen, ++index);
+                }
+
+                switch (c)
+                {
+
+                }
+            }
+
             return false;
         }
 
-        bool lxResolveAndApplyMacros(TokenContext* tokenContext, MacroContext* macroContext)
-        {
-            return false;
-        }
 
         size_t lxComputeT2TWidth(const Token* token1, const Token* token2)
         {
