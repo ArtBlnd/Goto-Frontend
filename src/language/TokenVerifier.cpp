@@ -61,4 +61,11 @@ namespace Goto
         
         return false;
     }
+
+    bool tvFastStrCmp16(const std::string& str1, const std::string& str2)
+    {
+        // We are just using normal compare just for now
+        // enabling it after using SmallString implementations.
+        return str1 == str2;
+    }
 }
