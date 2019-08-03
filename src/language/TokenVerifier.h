@@ -70,6 +70,22 @@ namespace Goto
         {
             return c == '=';
         }
+
+        // Token Verifier
+        // Type : '>' (GREATER_THAN)
+        constexpr char TK_GREATER_THAN_SYM = '>';
+        inline bool tvIsGreaterThanSym(const char c)
+        {
+            return c == '>';
+        }
+
+        // Token Verifier
+        // Type : '<' (LESS_THAN)
+        constexpr char TK_GREATER_THAN_SYM = '<';
+        inline bool tvIsLessThanSym(const char c)
+        {
+            return c == '<';
+        }
         
         // Token Verifier
         // Type : '(, )' (PAREN)

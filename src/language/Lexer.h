@@ -5,9 +5,10 @@
 
 namespace Goto
 {
-    namespace Engine
+    namespace Basic
     {
         class Engine;
+        class FileViewer;
     }
 
     namespace Language
@@ -30,7 +31,8 @@ namespace Goto
             MACRO_IF_DEF        = 0x06,
             MACRO_IF_NOT_DEF    = 0x07,
             MACRO_END_IF        = 0x08,
-            MACRO_DEFINED       = 0x09
+            MACRO_DEFINED       = 0x09,
+            MACRO_INCLUDE       = 0x0A,
         };
 
         class Macro
@@ -151,6 +153,7 @@ namespace Goto
             std::string Get() const;
         };
 
+        // This can contain symbol such as <, {, }, #, @ that something isn't a charactor.
         class TokenSymbol : Token
         {
             friend class TokenContext;
@@ -182,6 +185,7 @@ namespace Goto
         public:
         };
 
+        // Its a whitespace :)
         class TokenWhitespace : Token
         {
             friend class TokenContext;
@@ -190,6 +194,18 @@ namespace Goto
             TokenWhitespace(size_t Size, size_t Line, size_t Column);
 
         public:
+        };
+
+        struct LexerFileTrace
+        {
+            const char* srcFileBuf;
+            size_t      srcFileLen;
+
+            size_t ltIndex        = 0;
+            size_t ltCurrentColmn = 0;
+            size_t ltCurrentLine  = 0;
+
+            void RecordTrace(const char c);
         };
 
         // class TokenContext
@@ -208,7 +224,7 @@ namespace Goto
             size_t m_tcIdentifierTokenCnt = 0;
             size_t m_tcWhitespaceTokenCnt = 0;
 
-            Token* CreateTokenObjectImpl(Engine::Engine* compEngine);
+            Token* CreateTokenObjectImpl(Basic::Engine* compEngine);
 
         public:
             Token* CreateUnknownToken(char token);

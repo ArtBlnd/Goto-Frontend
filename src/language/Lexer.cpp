@@ -1,5 +1,8 @@
+#include "basic/Debug.h"
+
 #include "language/Lexer.h"
 #include "language/TokenVerifier.h"
+
 
 namespace Goto
 {
@@ -306,6 +309,74 @@ namespace Goto
             const std::string MK_IF_NOT_DEF = "ifndef";
             const std::string MK_END_IF     = "endif";
             const std::string MK_DEFINED    = "defined";
+            const std::string MK_INCLUDE    = "include";
+        }
+
+        std::string lxGetStringLiteralOnScope(const char* srcFileBuf, size_t srcFileLen, size_t index)
+        {
+            noway_assert(tvIsDoubleQuote(srcFileBuf[index++]), "Cannot extract string from string literal!");
+            std::string literal;
+
+            for (; index < srcFileLen; ++index)
+            {
+                char c = srcFileBuf[index];
+
+                literal += c;
+                if (tvIsDoubleQuote(c))
+                {
+                    break;
+                }
+            }
+            
+            return literal;
+        }
+
+        std::string lxGetFilenameFromInclude(const char* srcFileBuf, size_t srcFileLen, size_t& index)
+        {
+            const char initialC = srcFileBuf[index++];
+            noway_assert(tvIsSpace(initialC) || tvIsDoubleQuote(initialC) || tvIsLessThanSym(initialC), 
+                "Cannot extract include path from string!");
+
+            std::string fileName;
+
+            bool startRecord = false;
+            for (; index < srcFileLen; ++index)
+            {
+                char c = srcFileBuf[index];
+
+                if (startRecord)
+                {
+                    fileName += c;
+                    if (tvIsGreaterThanSym(c))
+                    {
+                        break;
+                    }
+                }
+
+                // We are skipping space that in between < or " and end of `e` which is end of include token
+                if (tvIsSpace(c))
+                {
+                    continue;
+                }
+
+                // Start parsig "`string`"
+                if (tvIsDoubleQuote(c))
+                {
+                    fileName = lxGetStringLiteralOnScope(srcFileBuf, srcFileLen, index);
+                    break;
+                }
+
+                // Start parsing <`string`>
+                if (tvIsLessThanSym(c))
+                {
+                    startRecord = true;
+                }
+
+                // TODO : replace assert to source trace.
+                noway_assert(true, "[INTERNAL] failed to find start of define token");                
+            }
+
+            return fileName;
         }
 
         /* lxTokenlizeMacro
@@ -318,11 +389,14 @@ namespace Goto
          *      - srcFileBuf : target source file buffer
          *      - srcFileLen : target source file length
          *      - index : curret reading index
-         * Returns : size that read from srcFileBuf in this function to check what is next.
+         * Returns : 
+         *      Macro object that parsed from lxTokenlizeMacro.
          */
-        size_t lxTokenlizeMacro(MacroContext* mContext, const char* srcFileBuf, size_t srcFileLen, size_t index)
+        Macro* lxTokenlizeMacro(MacroContext* mContext, const char* srcFileBuf, size_t srcFileLen, size_t& index)
         {
-            size_t      macroTotalRead = 0;
+            noway_assert(tvIsSharp(srcFileBuf[index++]), "Cannot extract macro type from string!");
+
+            Macro*      macro;
             std::string macroToken;
 
             for (; index < srcFileLen; ++index)
@@ -336,71 +410,66 @@ namespace Goto
                     }
                     macroToken += c;
                 }
-
                 break;
             }
 
-            // Size that we read in macro indentifier.
-            // also adding 1 because of space.
-            macroTotalRead += macroToken.size() + 1;
-
-            if (tvFastStrCmp16(macroToken, MacroKeyword::MK_DEFINE))
+            // Start identifying macro types.
+            if (macroToken == MacroKeyword::MK_DEFINE)
             {
 
             }
-
-            else if (tvFastStrCmp16(macroToken, MacroKeyword::MK_UNDEF))
+            else if (macroToken == MacroKeyword::MK_UNDEF)
             {
 
             }
-
-            else if (tvFastStrCmp16(macroToken, MacroKeyword::MK_IF))
+            else if (macroToken == MacroKeyword::MK_IF)
             {
 
             }
-
-            else if (tvFastStrCmp16(macroToken, MacroKeyword::MK_ELSE))
+            else if (macroToken == MacroKeyword::MK_ELSE)
             {
 
             }
-
-            else if (tvFastStrCmp16(macroToken, MacroKeyword::MK_ELSE_IF))
+            else if (macroToken == MacroKeyword::MK_ELSE_IF)
             {
 
             }
-
-            else if (tvFastStrCmp16(macroToken, MacroKeyword::MK_IF_DEF))
+            else if (macroToken == MacroKeyword::MK_IF_DEF)
             {
 
             }
-
-            else if (tvFastStrCmp16(macroToken, MacroKeyword::MK_IF_NOT_DEF))
+            else if (macroToken == MacroKeyword::MK_IF_NOT_DEF)
             {
 
             }
-
-            else if (tvFastStrCmp16(macroToken, MacroKeyword::MK_END_IF))
+            else if (macroToken == MacroKeyword::MK_END_IF)
             {
 
             }
-
-            else if (tvFastStrCmp16(macroToken, MacroKeyword::MK_DEFINED))
+            else if (macroToken == MacroKeyword::MK_DEFINED)
             {
 
             }
+            else if (macroToken == MacroKeyword::MK_INCLUDE)
+            {
+                std::string includePath = lxGetFilenameFromInclude(srcFileBuf, srcFileLen, index);
+            }
 
-            return macroTotalRead;
+            return macro;
         }
 
         bool lxTokenlizeSourceCode(TokenContext* tContext, MacroContext* mContext, const char* srcFileBuf, size_t srcFileLen)
         {
+            LexerFileTrace fileTrace;
+
             for (size_t index = 0; index < srcFileLen; ++index)
             {
-                char c = srcFileBuf[index];
+                const char c = srcFileBuf[index];
+                fileTrace.RecordTrace(c);
 
                 if (tvIsSharp(c)) 
                 {
-                    index += lxTokenlizeMacro(mContext, srcFileBuf, srcFileLen, ++index);
+                    Macro* newMacro = lxTokenlizeMacro(mContext, srcFileBuf, srcFileLen, index);
                 }
 
                 switch (c)
