@@ -8,9 +8,10 @@ namespace Goto
 {
     namespace Language
     {
-        //
+        // ============================================
         // Token Implements
-        //
+        // ============================================
+        
         Token::Token(TokenType Type, size_t Size, size_t Line, size_t Column)
         {
             m_tkType = Type;
@@ -129,9 +130,9 @@ namespace Goto
             return nullptr;
         }
 
-        //
+        // ============================================
         // Token Unknown Implements
-        //
+        // ============================================
 
         TokenUnknown::TokenUnknown(size_t Line, size_t Column, char UnknownToken) :
             Token(TokenType::TOKEN_UNKNOWN, 1 /* One Char */, Line, Column)
@@ -149,9 +150,10 @@ namespace Goto
             return m_tkUnknown;
         }
 
-        //
+        // ============================================
         // Token Literal Implements
-        //
+        // ============================================
+
         TokenLiteral::TokenLiteral(size_t Line, size_t Column, std::string SymbolLiteral) :
             Token(TokenType::TOKEN_LITERAL, SymbolLiteral.length(), Line, Column)
         {
@@ -190,9 +192,10 @@ namespace Goto
             return m_tkLiteral;
         }
 
-        //
+        // ============================================
         // Token Symbol Implements
-        //
+        // ============================================
+
         TokenSymbol::TokenSymbol(size_t Line, size_t Column, char SymbolToken) :
             Token(TokenType::TOKEN_SYMBOL, 1 /* One Char */, Line, Column)
         {
@@ -234,9 +237,9 @@ namespace Goto
             return tvIsAsterisk(Get());
         }
 
-        //
+        // ============================================
         // Token Identifier Implements
-        //
+        // ============================================
 
         TokenIdentifier::TokenIdentifier(size_t Line, size_t Column, std::string IdentifierToken) :
             Token(TokenType::TOKEN_IDENTIFIER, IdentifierToken.size(), Line, Column)
@@ -244,9 +247,9 @@ namespace Goto
             m_tkIdentifier = IdentifierToken;
         }
 
-        //
+        // ============================================
         // Token Whitespace Implements
-        //
+        // ============================================
 
         TokenWhitespace::TokenWhitespace(size_t Size, size_t Line, size_t Column) :
             Token(TokenType::TOKEN_WHITESPACE, Size, Line, Column)
@@ -254,9 +257,9 @@ namespace Goto
 
         }
 
-        //
+        // ============================================
         // TokenContext Implements
-        //
+        // ============================================
 
         Token* TokenContext::CreateUnknownToken(char token)
         {
@@ -297,6 +300,10 @@ namespace Goto
             return sizeof(Token) + 32;
         }
 
+        //
+        // Lexer implements section.
+        //
+
         // Macro keyword token table.
         namespace MacroKeyword
         {
@@ -312,7 +319,18 @@ namespace Goto
             const std::string MK_INCLUDE    = "include";
         }
 
-        std::string lxGetStringLiteralOnScope(const char* srcFileBuf, size_t srcFileLen, size_t index)
+         /* lxGetStringLiteralOnScope
+          *
+          * Description:
+          *     Parse string that contains in literal, which is ' or ""
+          * Params :
+          *      - srcFileBuf : target source file buffer
+          *      - srcFileLen : target source file length
+          *      - index : curret reading index
+          * Returns :
+          *     return parsed string of literal
+          */
+        std::string lxGetStringLiteralOnScope(const char* srcFileBuf, size_t srcFileLen, size_t& index)
         {
             noway_assert(tvIsDoubleQuote(srcFileBuf[index++]), "Cannot extract string from string literal!");
             std::string literal;
@@ -331,6 +349,17 @@ namespace Goto
             return literal;
         }
 
+         /* lxTokenlizeMacro
+          *
+          * Description:
+          *     Parse filename from include macro
+          * Params :
+          *      - srcFileBuf : target source file buffer
+          *      - srcFileLen : target source file length
+          *      - index : curret reading index
+          * Returns :
+          *     Filename that include macro contains.
+          */
         std::string lxGetFilenameFromInclude(const char* srcFileBuf, size_t srcFileLen, size_t& index)
         {
             const char initialC = srcFileBuf[index++];
@@ -458,6 +487,19 @@ namespace Goto
             return macro;
         }
 
+        /* lxTokenlizeSourceCode
+         *
+         * Description:
+         *      Parse macro tokens and records in mContext table.
+         *      so that we can use macros when we are tokenlizing target source file.
+         * Params :
+         *      - tContext : context that contains current parsed tokens in this instance
+         *      - mContext : context that contains current parsed macros in this instance
+         *      - srcFileBuf : target source file buffer
+         *      - srcFileLen : target source file length
+         * Returns : 
+         *      Returning true if successed to tokenlzie source code
+         */
         bool lxTokenlizeSourceCode(TokenContext* tContext, MacroContext* mContext, const char* srcFileBuf, size_t srcFileLen)
         {
             LexerFileTrace fileTrace;
@@ -474,13 +516,18 @@ namespace Goto
 
                 switch (c)
                 {
-
+                case TK_SPACE:
+                    continue;
+                case TK_DOUBLE_QUOTE:
+                    {
+                        std::string stringLiteral = lxGetStringLiteralOnScope(srcFileBuf, srcFileLen, index);
+                    }
+                    break;
                 }
             }
 
             return false;
         }
-
 
         size_t lxComputeT2TWidth(const Token* token1, const Token* token2)
         {
