@@ -250,7 +250,7 @@ namespace Goto
         // returning size of first char 'v' to last T1 char of 'c'. so its 10
         size_t lxComputeT2TWidth(const Token* token1, const Token* token2);
 
-    }
-}
+    } // namespace Language
+} // namespace Goto
 
 #endif

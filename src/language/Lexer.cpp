@@ -11,7 +11,7 @@ namespace Goto
         // ============================================
         // Token Implements
         // ============================================
-        
+
         Token::Token(TokenType Type, size_t Size, size_t Line, size_t Column)
         {
             m_tkType = Type;
@@ -525,27 +525,10 @@ namespace Goto
                     break;
                 }
             }
-
             return false;
         }
+        
 
-        size_t lxComputeT2TWidth(const Token* token1, const Token* token2)
-        {
-            size_t offBegin = token1->GetColumn();
-            size_t offEnd = token2->GetColumn() + token2->GetSize();
 
-            if (token1->GetLine() != token2->GetLine())
-            {
-                size_t offLine = 0;
-                for (Token* tkBeg = token1->m_tkNext; tkBeg != token2; tkBeg = tkBeg->m_tkNext)
-                {
-                    offLine += tkBeg->GetSize();
-                }
-
-                return offBegin + offEnd + offLine;
-            }
-
-            return offEnd - offBegin;
-        }
-    }
-}
+    } // namespace Language
+} // namespace Goto
