@@ -199,6 +199,30 @@ namespace Goto
         bool tvIsAlphabet(const std::string& str);
         bool tvIsAlphabet(const char c);
 
+        inline bool tvIsSpecalSym(const char c)
+        {
+            return tvIsColon(c)          | // :
+                   tvIsSemicolon(c)      | // ;
+                   tvIsEqualSym(c)       | // =
+                   tvIsComma(c)          | // ,
+                   tvIsDot(c)            | // .
+                   tvIsAsterisk(c)       | // *
+                   tvIsSharp(c)          | // #
+                   tvIsPlusSym(c)        | // +
+                   tvIsMinusSym(c)       | // -
+                   tvIsNotSym(c)         | // !
+                   tvIsXorSym(c)         | // ^
+                   tvIsModSym(c)         | // %
+                   tvIsAndSym(c)         | // &
+                   tvIsAtSym(c)          | // @
+                   tvIsBracket(c, true)  | // {
+                   tvIsBracket(c, false) | // }
+                   tvIsParen(c, true)    | // (
+                   tvIsParen(c, false)   | // )
+                   tvIsGreaterThanSym(c) | // >
+                   tvIsLessThanSym(c);     // <
+        }
+
         // Fast token comparer if its under 16 bytes.
         // this use normalization which is change 16 byte char array into integer and compare.
         bool tvFastStrCmp16(const std::string& str1, const std::string& str2);
