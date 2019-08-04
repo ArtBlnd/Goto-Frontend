@@ -24,11 +24,27 @@ namespace Goto
         }
 
         // Token Verifier
-        // Type : '-' (DASH)
-        constexpr char TK_DASH = '-';
-        inline bool tvIsDash(const char c)
+        // Type : '+' (PLUS)
+        constexpr char TK_PLUS_SYM = '+';
+        inline bool tvIsPlusSym(const char c)
+        {
+            return c == '+';
+        }
+
+        // Token Verifier
+        // Type : '-' (MINUS)
+        constexpr char TK_MINUS_SYM = '-';
+        inline bool tvIsMinusSym(const char c)
         {
             return c == '-';
+        }
+
+        // Token Verifier
+        // Type : ':' (COLON)
+        constexpr char TK_COLON = ':';
+        inline bool tvIsColon(const char c)
+        {
+            return c == ':';
         }
 
         // Token Verifier
@@ -61,6 +77,46 @@ namespace Goto
         inline bool tvIsSpace(const char c)
         {
             return c == ' ';
+        }
+
+        // Token Verifier
+        // Type : '@' (AT)
+        constexpr char TK_AT_SYM = '@';
+        inline bool tvIsAtSym(const char c)
+        {
+            return c == '@';
+        }
+
+        // Token Verifier
+        // Type : '^' (XOR)
+        constexpr char TK_XOR_SYM = '^';
+        inline bool tvIsXorSym(const char c)
+        {
+            return c == '^';
+        }
+
+        // Token Verifier
+        // Type : '%' (MOD)
+        constexpr char TK_MOD_SYM = '%';
+        inline bool tvIsModSym(const char c)
+        {
+            return c == '%';
+        }
+
+        // Token Verifier
+        // Type : '&' (AND)
+        constexpr char TK_AND_SYM = '&';
+        inline bool tvIsAndSym(const char c)
+        {
+            return c == '&';
+        }
+
+        // Token Verifier
+        // Type : '!' (NOT)
+        constexpr char TK_NOT_SYM = '!';
+        inline bool tvIsNotSym(const char c)
+        {
+            return c == '!';
         }
 
         // Token Verifier
@@ -106,10 +162,10 @@ namespace Goto
         }
 
         // Token Verifier
-        // Type : '{, }' (CURLY)
-        constexpr char TK_CURLY_OPENED = '{';
-        constexpr char TK_CURLY_CLOSED = '}';
-        inline bool tvIsCurly(const char c, bool isClosed)
+        // Type : '{, }' (BRACKET)
+        constexpr char TK_BRACKET_OPENED = '{';
+        constexpr char TK_BRACKET_CLOSED = '}';
+        inline bool tvIsBracket(const char c, bool isClosed)
         {
             return isClosed ? c == '}' : c == '{';
         }
