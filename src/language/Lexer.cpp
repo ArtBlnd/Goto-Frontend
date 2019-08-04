@@ -224,7 +224,7 @@ namespace Goto
 
         bool TokenSymbol::IsSymbolCurly(bool isClosed) const
         {
-            return tvIsCurly(Get(), isClosed);
+            return tvIsBracket(Get(), isClosed);
         }
 
         bool TokenSymbol::IsSymbolSemicolon() const
@@ -319,10 +319,54 @@ namespace Goto
             const std::string MK_INCLUDE    = "include";
         }
 
+        void lxSkipSpaces(const char* srcFileBuf, size_t srcFileLen, size_t& index)
+        {
+            noway_assert(tvIsSpace(srcFileBuf[index]), "Cannot skip spaces, target charactor is not space!");
+
+            for (; index < srcFileLen; ++index)
+            {
+                if (!tvIsSpace(srcFileBuf[index]))
+                {
+                    break;
+                }
+            }
+        }
+
+        /* lxGetIdentifierOnScope
+         *
+         * Description :
+         *      Parse string that is not a specal symbols
+         * Params :
+         *      - srcFileBuf : target source file buffer
+         *      - srcFileLen : target source file length
+         *      - index : current reading index
+         * Returns :
+         *      return parsed identifier string
+         */
+        std::string lxGetIdentifierOnScope(const char* srcFileBuf, size_t srcFileLen, size_t& index)
+        {
+            noway_assert(tvIsSpecalSym(srcFileBuf[index]), "Identifier should not start with specal symbols!");
+
+            std::string identifier;
+            for (index; index < srcFileLen; ++index)
+            {
+                char c = srcFileBuf[index];
+
+                if (tvIsSpecalSym(c))
+                {
+                    break;
+                }
+                identifier += c;
+            }
+
+            index--;
+            return identifier;
+        }
+
          /* lxGetStringLiteralOnScope
           *
           * Description:
-          *     Parse string that contains in literal, which is ' or ""
+          *     Parse string that contains in literal, which is ' or "
           * Params :
           *      - srcFileBuf : target source file buffer
           *      - srcFileLen : target source file length
@@ -349,18 +393,19 @@ namespace Goto
             return literal;
         }
 
-         /* lxTokenlizeMacro
-          *
-          * Description:
-          *     Parse filename from include macro
-          * Params :
-          *      - srcFileBuf : target source file buffer
-          *      - srcFileLen : target source file length
-          *      - index : curret reading index
-          * Returns :
-          *     Filename that include macro contains.
-          */
-        std::string lxGetFilenameFromInclude(const char* srcFileBuf, size_t srcFileLen, size_t& index)
+        /* lxTokenlizeMacro
+         *
+         * Description:
+         *     Parse filename from include macro
+         * Params :
+         *      - srcFileBuf : target source file buffer
+         *      - srcFileLen : target source file length
+         *      - index : curret reading index
+         *      - isLocalPath : is filename on local path.
+         * Returns :
+         *     Filename that include macro contains.
+         */
+        std::string lxGetFilenameFromInclude(const char* srcFileBuf, size_t srcFileLen, size_t& index, bool& isLocalPath)
         {
             const char initialC = srcFileBuf[index++];
             noway_assert(tvIsSpace(initialC) || tvIsDoubleQuote(initialC) || tvIsLessThanSym(initialC), 
@@ -392,12 +437,14 @@ namespace Goto
                 if (tvIsDoubleQuote(c))
                 {
                     fileName = lxGetStringLiteralOnScope(srcFileBuf, srcFileLen, index);
+                    isLocalPath = true;
                     break;
                 }
 
                 // Start parsing <`string`>
                 if (tvIsLessThanSym(c))
                 {
+                    isLocalPath = false;
                     startRecord = true;
                 }
 
@@ -449,7 +496,8 @@ namespace Goto
             }
             else if (macroToken == MacroKeyword::MK_UNDEF)
             {
-
+                lxSkipSpaces(srcFileBuf, srcFileLen, index);
+                std::string undefTarget = lxGetIdentifierOnScope(srcFileBuf, srcFileLen, index);
             }
             else if (macroToken == MacroKeyword::MK_IF)
             {
@@ -481,7 +529,8 @@ namespace Goto
             }
             else if (macroToken == MacroKeyword::MK_INCLUDE)
             {
-                std::string includePath = lxGetFilenameFromInclude(srcFileBuf, srcFileLen, index);
+                bool        isLocalPath = false;
+                std::string includePath = lxGetFilenameFromInclude(srcFileBuf, srcFileLen, index, isLocalPath);
             }
 
             return macro;
@@ -502,13 +551,9 @@ namespace Goto
          */
         bool lxTokenlizeSourceCode(TokenContext* tContext, MacroContext* mContext, const char* srcFileBuf, size_t srcFileLen)
         {
-            LexerFileTrace fileTrace;
-
             for (size_t index = 0; index < srcFileLen; ++index)
             {
                 const char c = srcFileBuf[index];
-                fileTrace.RecordTrace(c);
-
                 if (tvIsSharp(c)) 
                 {
                     Macro* newMacro = lxTokenlizeMacro(mContext, srcFileBuf, srcFileLen, index);
