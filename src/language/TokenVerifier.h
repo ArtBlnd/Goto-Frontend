@@ -80,6 +80,14 @@ namespace Goto
         }
 
         // Token Verifier
+        // Type : '\n' (NEXT_LINE)
+        constexpr char TK_NEXT_LINE = '\n';
+        inline bool tvIsNextLine(const char c)
+        {
+            return c == '\n';
+        }
+
+        // Token Verifier
         // Type : '@' (AT)
         constexpr char TK_AT_SYM = '@';
         inline bool tvIsAtSym(const char c)

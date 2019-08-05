@@ -196,18 +196,6 @@ namespace Goto
         public:
         };
 
-        struct LexerFileTrace
-        {
-            const char* srcFileBuf;
-            size_t      srcFileLen;
-
-            size_t ltIndex        = 0;
-            size_t ltCurrentColmn = 0;
-            size_t ltCurrentLine  = 0;
-
-            void RecordTrace(const char c);
-        };
-
         // class TokenContext
         // Information:
         //      This contains token informations for parsed tokens with allocations.
@@ -236,6 +224,37 @@ namespace Goto
             void InsertToken(Token* nextToken);
 
             static constexpr size_t GetTokenObjectSize();
+        };
+
+        class Lexer
+        {
+            const char* lxSrcFileBuf;
+            size_t      lxSrcFileLen;
+
+            size_t lxIndex        = 0;
+            size_t lxCurrentColmn = 0;
+            size_t lxCurrentLine  = 0;
+
+            TokenContext* lxTokenContext;
+            MacroContext* lxMacroContext;
+
+            bool IsEOF() const;
+            char ConsumeChar();
+            void UngetChar();
+            char GetCurrentChar();
+
+        public:
+            Lexer() = delete;
+            Lexer(TokenContext* tContext, MacroContext* mContext, const char* srcFileBuf, size_t srcFileLen);
+
+            bool lxSkipSpaces();
+            bool lxStartTokenlizeSourceCode();
+
+            std::string lxGetNextFilenameFromInclude(bool& isLocalPath);
+            std::string lxGetNextIdentifierOnScope();
+            std::string lxGetNextStringLiteralOnScope();
+            
+            Macro* lxTokenlizeMacro();
         };
 
         // Tokenlize source code to TokenContext
