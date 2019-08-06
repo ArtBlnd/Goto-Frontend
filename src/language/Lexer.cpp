@@ -301,6 +301,76 @@ namespace Goto
         }
 
         //
+        // Macro Implements section
+        //
+
+        Macro::Macro(MacroType type, size_t size, size_t line, size_t column)
+            : m_mcrType(type), m_mcrSize(size), m_mcrLine(line), m_mcrColumn(column)
+        {
+
+        }
+
+        bool Macro::IsMacroType(MacroType type) const
+        {
+            return m_mcrType == type;
+        }
+            
+        bool Macro::IsUnknown() const
+        {
+            return IsMacroType(MacroType::MACRO_UNKNOWN);
+        }
+
+        bool Macro::IsMacroDefine() const
+        {
+            return IsMacroType(MacroType::MACRO_DEFINE);
+        }
+
+        bool Macro::IsMacroUndef() const
+        {
+            return IsMacroType(MacroType::MACRO_UNDEF);
+        }
+
+        bool Macro::IsMacroIf() const
+        {
+            return IsMacroType(MacroType::MACRO_IF);
+        }
+
+        bool Macro::IsMacroElse() const
+        {
+            return IsMacroType(MacroType::MACRO_ELSE);
+        }
+
+        bool Macro::IsMacroElseIf() const
+        {
+            return IsMacroType(MacroType::MACRO_ELSE_IF);
+        }
+
+        bool Macro::IsMacroIfDefine() const
+        {
+            return IsMacroType(MacroType::MACRO_IF_DEF);
+        }
+
+        bool Macro::IsMacroIfNotDefine() const
+        {
+            return IsMacroType(MacroType::MACRO_IF_NOT_DEF);
+        }
+
+        bool Macro::IsMacroEndIf() const
+        {
+            return IsMacroType(MacroType::MACRO_END_IF);
+        }
+
+        bool Macro::IsMacroDefined() const
+        {
+            return IsMacroType(MacroType::MACRO_DEFINED);
+        }
+
+        bool Macro::IsMacroInclude() const
+        {
+            return IsMacroType(MacroType::MACRO_INCLUDE);
+        }
+
+        //
         // Lexer implements section.
         //
 
@@ -575,7 +645,7 @@ namespace Goto
             else if (macroToken == MacroKeyword::MK_UNDEF)
             {
                 lxSkipSpaces();
-                std::string undefTarget = lxGetNextIdentifierOnScope();
+                std::string op1 = lxGetNextIdentifierOnScope();
             }
             else if (macroToken == MacroKeyword::MK_IF)
             {
@@ -603,7 +673,8 @@ namespace Goto
             }
             else if (macroToken == MacroKeyword::MK_DEFINED)
             {
-
+                lxSkipSpaces();
+                std::string op1 = lxGetNextIdentifierOnScope();
             }
             else if (macroToken == MacroKeyword::MK_INCLUDE)
             {

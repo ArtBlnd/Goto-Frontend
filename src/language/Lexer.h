@@ -42,17 +42,25 @@ namespace Goto
             size_t    m_mcrLine = 0;
             size_t    m_mcrColumn = 0;
 
-            Token* m_mcrNextToken = nullptr;
-            Token* m_mcrPrivToken = nullptr;
-
         protected:
             Macro() = delete;
             Macro(MacroType type, size_t size, size_t line, size_t column);
             virtual ~Macro() = default;
 
         public:
-            Token* GetNextToken();
-            Token* GetPrivToken();
+            bool IsMacroType(MacroType type) const;
+
+            bool IsUnknown() const;
+            bool IsMacroDefine() const;
+            bool IsMacroUndef() const;
+            bool IsMacroIf() const;
+            bool IsMacroElse() const;
+            bool IsMacroElseIf() const;
+            bool IsMacroIfDefine() const;
+            bool IsMacroIfNotDefine() const;
+            bool IsMacroEndIf() const;
+            bool IsMacroDefined() const;
+            bool IsMacroInclude() const;
         };
 
         class MacroContext
@@ -65,6 +73,8 @@ namespace Goto
             Macro* GetPredefFile();
             Macro* GetPredefLine(Token* targetToken);
             Macro* GetPredefTime();
+
+            Macro* LookupDefineTable(std::string key);
         };
 
         enum class TokenType
