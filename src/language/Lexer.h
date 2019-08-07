@@ -2,6 +2,7 @@
 #define __GOTO_C_FRONTEND_LANGUAGE_LEXER_H__
 
 #include <string>
+#include <vector>
 
 namespace Goto
 {
@@ -37,6 +38,8 @@ namespace Goto
 
         class Macro
         {
+            std::string m_mcrExpr;
+
             MacroType m_mcrType = MacroType::MACRO_UNKNOWN;
             size_t    m_mcrSize = 0;
             size_t    m_mcrLine = 0;
@@ -61,12 +64,14 @@ namespace Goto
             bool IsMacroEndIf() const;
             bool IsMacroDefined() const;
             bool IsMacroInclude() const;
+
+            bool IsMacroFunc() const;
         };
 
         class MacroContext
         {
-            Macro* m_mcMacroStart;
-            Macro* m_mcMacroEnd;
+            Macro* m_mcMacroBeg = nullptr;
+            Macro* m_mcMacroEnd = nullptr;
 
         public:
             Macro* GetPredefDate();
@@ -87,7 +92,7 @@ namespace Goto
         };
 
         // class Token
-        // Information :
+        // Description :
         //      Base class of all token objects
         //      contains basic information of token object, such as size, line, colum, type.
         class Token
@@ -211,47 +216,39 @@ namespace Goto
         //      This contains token informations for parsed tokens with allocations.
         class TokenContext
         {
-            // 
-            // Debugging Informations
-            //
-            size_t m_tcTotalAllocatedSize = 0;
 
-            size_t m_tcUnknownTokenCnt    = 0;
-            size_t m_tcLiteralTokenCnt    = 0;
-            size_t m_tcSymbolTokenCnt     = 0;
-            size_t m_tcIdentifierTokenCnt = 0;
-            size_t m_tcWhitespaceTokenCnt = 0;
-
-            Token* CreateTokenObjectImpl(Basic::Engine* compEngine);
+            Token* m_tcTokenBeg = nullptr;
+            Token* m_tcTokenEnd = nullptr;
 
         public:
-            Token* CreateUnknownToken(char token);
-            Token* CreateLiteralToken(char* token, size_t length);
-            Token* CreateSymbolToken(char token);
-            Token* CreateIdentifierToken(char* token, size_t length);
-            Token* CreateWhitespaceToken(size_t whitespaceLength);
-
             void InsertToken(Token* nextToken);
+            
+            Token* GetTokenBeg();
+            Token* GetTokenEnd();
 
-            static constexpr size_t GetTokenObjectSize();
+            bool isEmpty() const;
         };
 
         class Lexer
         {
-            const char* lxSrcFileBuf;
-            size_t      lxSrcFileLen;
+            const char* lxSrcFileBuf = nullptr;
+            size_t      lxSrcFileLen = 0;
 
+            // Trace informations
             size_t lxIndex        = 0;
             size_t lxCurrentColmn = 0;
             size_t lxCurrentLine  = 0;
-
-            TokenContext* lxTokenContext;
-            MacroContext* lxMacroContext;
 
             bool IsEOF() const;
             char ConsumeChar();
             void UngetChar();
             char GetCurrentChar();
+
+            TokenContext* lxTokenContext = nullptr;
+            MacroContext* lxMacroContext = nullptr;
+
+            Token* AllocateToken(TokenType type);
+            Macro* AllocateMacro(MacroType type);
 
         public:
             Lexer() = delete;
@@ -264,7 +261,7 @@ namespace Goto
             std::string lxGetNextIdentifierOnScope();
             std::string lxGetNextStringLiteralOnScope();
             
-            Macro* lxTokenlizeMacro();
+            Macro* lxTokenlizeNextMacro();
         };
 
         // Tokenlize source code to TokenContext

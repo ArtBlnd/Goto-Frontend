@@ -260,49 +260,13 @@ namespace Goto
         // ============================================
         // TokenContext Implements
         // ============================================
-
-        Token* TokenContext::CreateUnknownToken(char token)
-        {
-            m_tcUnknownTokenCnt++;
-            return nullptr;
-        }
-
-        Token* TokenContext::CreateLiteralToken(char* token, size_t length)
-        {
-            m_tcLiteralTokenCnt++;
-            return nullptr;
-        }
-
-        Token* TokenContext::CreateSymbolToken(char token)
-        {
-            m_tcSymbolTokenCnt++;
-            return nullptr;
-        }
-
-        Token* TokenContext::CreateIdentifierToken(char* token, size_t length)
-        {
-            m_tcIdentifierTokenCnt++;
-            return nullptr;
-        }
-
-        Token* TokenContext::CreateWhitespaceToken(size_t whitespaceLength)
-        {
-            m_tcWhitespaceTokenCnt++;
-            return nullptr;
-        }
-
         void TokenContext::InsertToken(Token* nextToken)
         {
         }
 
-        constexpr size_t TokenContext::GetTokenObjectSize()
-        {
-            return sizeof(Token) + 32;
-        }
-
-        //
+        // ============================================
         // Macro Implements section
-        //
+        // ============================================
 
         Macro::Macro(MacroType type, size_t size, size_t line, size_t column)
             : m_mcrType(type), m_mcrSize(size), m_mcrLine(line), m_mcrColumn(column)
@@ -370,9 +334,9 @@ namespace Goto
             return IsMacroType(MacroType::MACRO_INCLUDE);
         }
 
-        //
+        // ============================================
         // Lexer implements section.
-        //
+        // ============================================
 
         // Macro keyword token table.
         namespace MacroKeyword
@@ -479,7 +443,7 @@ namespace Goto
                 const char c = ConsumeChar();
                 if (tvIsSharp(c)) 
                 {
-                    Macro* newMacro = lxTokenlizeMacro();
+                    Macro* newMacro = lxTokenlizeNextMacro();
                 }
 
                 switch (c)
@@ -616,11 +580,10 @@ namespace Goto
          * Returns : 
          *      Macro object that parsed from lxTokenlizeMacro.
          */
-        Macro* Lexer::lxTokenlizeMacro()
+        Macro* Lexer::lxTokenlizeNextMacro()
         {
             noway_assert(tvIsSharp(srcFileBuf[index++]), "Cannot extract macro type from string!");
 
-            Macro*      macro;
             std::string macroToken;
 
             while (IsEOF())
@@ -682,7 +645,7 @@ namespace Goto
                 std::string includePath = lxGetNextFilenameFromInclude(isLocalPath);
             }
 
-            return macro;
+            return nullptr;
         }
 
     } // namespace Language
