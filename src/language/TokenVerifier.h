@@ -88,6 +88,14 @@ namespace Goto
         }
 
         // Token Verifier
+        // Type : '\\' (BACK_SLASH)
+        constexpr char TK_BACK_SLASH = '\\';
+        inline bool tvIsBackSlash(const char c)
+        {
+            return c == '\\';
+        }
+
+        // Token Verifier
         // Type : '@' (AT)
         constexpr char TK_AT_SYM = '@';
         inline bool tvIsAtSym(const char c)

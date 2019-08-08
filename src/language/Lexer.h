@@ -23,23 +23,22 @@ namespace Goto
 
         enum class MacroType
         {
-            MACRO_UNKNOWN       = 0xFF,
-            MACRO_DEFINE        = 0x01,
-            MACRO_UNDEF         = 0x02,
-            MACRO_IF            = 0x03,
-            MACRO_ELSE          = 0x04,
-            MACRO_ELSE_IF       = 0x05,
-            MACRO_IF_DEF        = 0x06,
-            MACRO_IF_NOT_DEF    = 0x07,
-            MACRO_END_IF        = 0x08,
-            MACRO_DEFINED       = 0x09,
-            MACRO_INCLUDE       = 0x0A,
+            MACRO_UNKNOWN        = 0xFF,
+            MACRO_DEFINE         = 0x01,
+            MACRO_UNDEF          = 0x02,
+            MACRO_IF             = 0x03,
+            MACRO_ELSE           = 0x04,
+            MACRO_ELSE_IF        = 0x05,
+            MACRO_IF_DEF         = 0x06,
+            MACRO_IF_NOT_DEF     = 0x07,
+            MACRO_END_IF         = 0x08,
+            MACRO_DEFINED        = 0x09,
+            MACRO_INCLUDE_GLOBAL = 0x0A,
+            MACRO_INCLUDE_LOCAL  = 0x0B,
         };
 
         class Macro
         {
-            std::string m_mcrExpr;
-
             MacroType m_mcrType = MacroType::MACRO_UNKNOWN;
             size_t    m_mcrSize = 0;
             size_t    m_mcrLine = 0;
@@ -63,9 +62,35 @@ namespace Goto
             bool IsMacroIfNotDefine() const;
             bool IsMacroEndIf() const;
             bool IsMacroDefined() const;
-            bool IsMacroInclude() const;
+            bool IsMacroIncludeGlobal() const;
+            bool IsMacroIncludeLocal() const;
 
-            bool IsMacroFunc() const;
+            MacroType GetMacroType() const;
+
+            void SetExpr(std::string expr);
+            const std::string& GetExpr() const;
+
+            std::string ExpandDefineExpr();
+            std::string ExpandDefineExpr(std::vector<std::string> Operands);
+
+            bool ExpandCondtionalExpr();
+
+            std::string ExpandIncludeExpr();
+        };
+
+        class MacroExprOpStr : public Macro
+        {
+            std::string macroExpr;
+        };
+
+        class MacroExprOpChar : public Macro
+        {
+            char* macroExpr;
+        };
+
+        class MacroExprOpPtr : public Macro
+        {
+            Macro* macroExpr;
         };
 
         class MacroContext
@@ -248,20 +273,27 @@ namespace Goto
             MacroContext* lxMacroContext = nullptr;
 
             Token* AllocateToken(TokenType type);
-            Macro* AllocateMacro(MacroType type);
+            Token* AllocateToken(TokenType type, std::string str);
+            Token* AllocateToken(TokenType type, char c);
 
-        public:
-            Lexer() = delete;
-            Lexer(TokenContext* tContext, MacroContext* mContext, const char* srcFileBuf, size_t srcFileLen);
+            Macro* AllocateMacro(MacroType type);
+            Macro* AllocateMacro(MacroType type, std::string expr);
 
             bool lxSkipSpaces();
-            bool lxStartTokenlizeSourceCode();
 
             std::string lxGetNextFilenameFromInclude(bool& isLocalPath);
             std::string lxGetNextIdentifierOnScope();
             std::string lxGetNextStringLiteralOnScope();
             
-            Macro* lxTokenlizeNextMacro();
+            Macro* lxTokenlizeNextMacro(bool skipSharpCheck = true);
+            std::string lxTokenlizeNextMacroOperands();
+
+        public:
+            Lexer() = delete;
+            Lexer(TokenContext* tContext, MacroContext* mContext, const char* srcFileBuf, size_t srcFileLen);
+
+            
+            bool lxStartTokenlizeSourceCode();
         };
 
         // Tokenlize source code to TokenContext

@@ -329,9 +329,19 @@ namespace Goto
             return IsMacroType(MacroType::MACRO_DEFINED);
         }
 
-        bool Macro::IsMacroInclude() const
+        bool Macro::IsMacroIncludeGlobal() const
         {
-            return IsMacroType(MacroType::MACRO_INCLUDE);
+            return IsMacroType(MacroType::MACRO_INCLUDE_GLOBAL);
+        }
+
+        bool Macro::IsMacroIncludeLocal() const
+        {
+            return IsMacroType(MacroType::MACRO_INCLUDE_LOCAL);
+        }
+
+        MacroType Macro::GetMacroType() const
+        {
+            return m_mcrType;
         }
 
         // ============================================
@@ -572,6 +582,37 @@ namespace Goto
             return fileName;
         }
 
+        std::string Lexer::lxTokenlizeNextMacroOperands()
+        {
+            std::string macroOperand;
+
+            bool isBackSlashFound = false;
+            while (IsEOF())
+            {
+                char c = ConsumeChar();
+                if (!tvIsNextLine(c))
+                {
+                    if (tvIsBackSlash(c))
+                    {
+                        isBackSlashFound = true;
+                    }
+
+                    macroOperand += c;
+                    continue;
+                }
+
+                if (isBackSlashFound)
+                {
+                    isBackSlashFound = false;
+                    continue;
+                }
+
+                break;
+            }
+
+            return macroOperand;
+        }
+
         /* lxTokenlizeMacro
          *
          * Description:
@@ -580,11 +621,15 @@ namespace Goto
          * Returns : 
          *      Macro object that parsed from lxTokenlizeMacro.
          */
-        Macro* Lexer::lxTokenlizeNextMacro()
+        Macro* Lexer::lxTokenlizeNextMacro(bool skipSharpCheck)
         {
-            noway_assert(tvIsSharp(srcFileBuf[index++]), "Cannot extract macro type from string!");
+            if (!skipSharpCheck)
+            {
+                noway_assert(tvIsSharp(srcFileBuf[index++]), "Cannot extract macro type from string!");
+            }
 
             std::string macroToken;
+            
 
             while (IsEOF())
             {
@@ -596,10 +641,11 @@ namespace Goto
                         // TODO : unknown charactor indicator.
                     }
                     macroToken += c;
+                    continue;
                 }
                 break;
             }
-
+            
             // Start identifying macro types.
             if (macroToken == MacroKeyword::MK_DEFINE)
             {
@@ -608,7 +654,7 @@ namespace Goto
             else if (macroToken == MacroKeyword::MK_UNDEF)
             {
                 lxSkipSpaces();
-                std::string op1 = lxGetNextIdentifierOnScope();
+                return AllocateMacro(MacroType::MACRO_UNDEF, lxGetNextIdentifierOnScope());
             }
             else if (macroToken == MacroKeyword::MK_IF)
             {
@@ -616,7 +662,7 @@ namespace Goto
             }
             else if (macroToken == MacroKeyword::MK_ELSE)
             {
-
+                return AllocateMacro(MacroType::MACRO_ELSE);
             }
             else if (macroToken == MacroKeyword::MK_ELSE_IF)
             {
@@ -637,12 +683,21 @@ namespace Goto
             else if (macroToken == MacroKeyword::MK_DEFINED)
             {
                 lxSkipSpaces();
-                std::string op1 = lxGetNextIdentifierOnScope();
+                return AllocateMacro(MacroType::MACRO_DEFINED, lxGetNextIdentifierOnScope());
             }
             else if (macroToken == MacroKeyword::MK_INCLUDE)
             {
                 bool        isLocalPath = false;
                 std::string includePath = lxGetNextFilenameFromInclude(isLocalPath);
+
+                if (isLocalPath)
+                {
+                    return AllocateMacro(MacroType::MACRO_INCLUDE_LOCAL, includePath);
+                }
+                else
+                {
+                    return AllocateMacro(MacroType::MACRO_INCLUDE_GLOBAL, includePath);
+                }
             }
 
             return nullptr;
