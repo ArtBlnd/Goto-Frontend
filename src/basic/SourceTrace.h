@@ -5,34 +5,31 @@
 
 namespace Goto
 {
-    namespace Basic
-    {
-        class ISourceTraceData
-        {
-            
-        };
+namespace Basic
+{
 
-        class ISourceErrorData : ISourceTraceData
-        {
+class ISourceTraceData
+{
+};
 
-        };
+class ISourceErrorData : ISourceTraceData
+{
+};
 
-        class ISourceInfoData : ISourceTraceData
-        {
+class ISourceInfoData : ISourceTraceData
+{
+};
 
-        };
+class ISourceWarningData : ISourceTraceData
+{
+};
 
-        class ISourceWarningData : ISourceTraceData
-        {
+class SourceTrace
+{
+};
 
-        };
-
-        class SourceTrace
-        {
-
-        };
-    }
-}
+} // namespace Basic
+} // namespace Goto
 
 
 #endif

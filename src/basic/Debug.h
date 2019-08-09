@@ -7,12 +7,14 @@
 
 namespace Goto
 {
-    namespace Debug
-    {
-        void Assert(char* reason);
-        void Assert();
-    }
-}
+
+namespace Debug
+{
+void Assert(char* reason);
+void Assert();
+
+} // namespace Debug
+} // namespace Goto
 
 
 #endif

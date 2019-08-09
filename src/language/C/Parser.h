@@ -4,6 +4,6 @@
 namespace Goto
 {
 
-}
+} // namespace Goto
 
 #endif

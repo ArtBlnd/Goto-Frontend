@@ -5,17 +5,16 @@
 
 namespace Goto
 {
-    struct CompileInfo
-    {
-        std::string m_ciSourceFile;
-        std::string m_ciSourcePath;
+struct CompileInfo
+{
+    std::string m_ciSourceFile;
+    std::string m_ciSourcePath;
 
-        std::string m_ciEntryPoint;
+    std::string m_ciEntryPoint;
 
-
-        bool m_ciVerbose = false;
-        bool m_ciDumpAst = false;
-    };
-}
+    bool m_ciVerbose = false;
+    bool m_ciDumpAst = false;
+};
+} // namespace Goto
 
 #endif

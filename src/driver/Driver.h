@@ -3,12 +3,13 @@
 
 namespace Goto
 {
-    namespace Driver
-    {
-        struct CommandLineContext;
+namespace Driver
+{
+struct CommandLineContext;
 
-        bool ExecuteCompilerEngine(CommandLineContext* CLIContext);
-    }
-}
+bool ExecuteCompilerEngine(CommandLineContext* CLIContext);
+
+} // namespace Driver
+} // namespace Goto
 
 #endif

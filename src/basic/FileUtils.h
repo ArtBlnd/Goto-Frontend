@@ -5,41 +5,44 @@
 
 namespace Goto
 {
-    namespace Basic
-    {
-        class FileViewer
-        {
-            std::string m_frName;
-            size_t      m_frSize;
-            
-            char* m_frCachedBuf = nullptr;
+namespace Basic
+{
 
-            void OpenAndCache();
-        public:
-            FileViewer() = delete;
-            FileViewer(std::string fileName);
-            ~FileViewer();
+class FileViewer
+{
+    std::string m_frName;
+    size_t      m_frSize;
 
-            // Read file buffer and cache, return it.
-            char* GetBuffer();
+    char* m_frCachedBuf = nullptr;
 
-            // Free buffer caches to reload it
-            void FreeCache();
+    void OpenAndCache();
 
-            const std::string& GetFileName() const;
-            size_t GetFileSize() const;
-        };
+public:
+    FileViewer() = delete;
+    FileViewer(std::string fileName);
+    ~FileViewer();
 
-        // Check that file exists. true means its exists.
-        bool fuFileExists(std::string filePath);
-        bool fuFileExists(std::string filePath, std::string basePath);
+    // Read file buffer and cache, return it.
+    char* GetBuffer();
 
-        // Get full file path based on basePath which means returning absolute path.
-        std::string fuGetFullFilePath(std::string filePath, std::string basePath);
+    // Free buffer caches to reload it
+    void FreeCache();
 
-        // Get file extension from file name.
-        std::string fuGetFileExts(std::string fileName);
-    }
-}
+    const std::string& GetFileName() const;
+    size_t             GetFileSize() const;
+};
+
+// Check that file exists. true means its exists.
+bool fuFileExists(std::string filePath);
+bool fuFileExists(std::string filePath, std::string basePath);
+
+// Get full file path based on basePath which means returning absolute path.
+std::string fuGetFullFilePath(std::string filePath, std::string basePath);
+
+// Get file extension from file name.
+std::string fuGetFileExts(std::string fileName);
+
+} // namespace Basic
+} // namespace Goto
 
 #endif
