@@ -29,6 +29,7 @@ protected:
     void lxConsumeChar();
     char lxConsumeAndGetChar();
     char lxGetCurrChar();
+    char lxGetPrivChar();
     char lxGetNextChar();
 
     ILexer() = delete;

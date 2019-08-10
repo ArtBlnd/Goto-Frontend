@@ -86,6 +86,12 @@ char ILexer::lxGetNextChar()
     return lxSrcFileBuf[lxCurrIndex + 1];
 }
 
+char ILexer::lxGetPrivChar() 
+{
+    noway_assert(lxCurrIndex != 0, "Cannot get priv char in buffer!");
+    return lxSrcFileBuf[lxCurrIndex + 1];
+}
+
 ILexer::ILexer(const char* srcFileBuf, size_t srcFileLen) : lxSrcFileBuf(srcFileBuf), lxSrcFileLen(srcFileLen)
 {
     noway_assert(srcFileBuf != nullptr, "Source file buffer cannot be nullptr!");
