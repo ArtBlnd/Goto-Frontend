@@ -246,7 +246,6 @@ public:
 //      This contains token informations for parsed tokens with allocations.
 class TokenContext
 {
-
     Token* m_tcTokenBeg = nullptr;
     Token* m_tcTokenEnd = nullptr;
 
@@ -275,7 +274,7 @@ class Lexer : public ILexer
     std::string lxGetNextIdentifierOnScope();
     std::string lxGetNextStringLiteralOnScope();
 
-    Macro*      lxTokenlizeNextMacro(bool skipSharpCheck = true);
+    Macro*      lxTokenlizeNextMacro();
     std::string lxTokenlizeNextMacroOperands();
 
 public:

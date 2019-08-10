@@ -396,6 +396,13 @@ MacroType Macro::GetMacroType() const
 // Lexer implements section.
 // ============================================
 
+Token* Lexer::AllocateToken(TokenType type) {} 
+Token* Lexer::AllocateToken(TokenType type, std::string str) {}
+Token* Lexer::AllocateToken(TokenType type, char c) {}
+
+Macro* Lexer::AllocateMacro(MacroType type) {}
+Macro* Lexer::AllocateMacro(MacroType type, std::string expr) {}
+
 /* lxTokenlizeSourceCode
  *
  * Description:
@@ -431,21 +438,10 @@ bool Lexer::lxStartTokenlizeSourceCode()
 {
     while (lxIsEOF())
     {
-        const char c = lxConsumeAndGetChar();
+        const char c = lxGetCurrChar();
         if (ttIsSharp(c))
         {
             Macro* newMacro = lxTokenlizeNextMacro();
-        }
-
-        switch (c)
-        {
-            case TK_SPACE:
-                continue;
-            case TK_DOUBLE_QUOTE:
-            {
-                std::string stringLiteral = lxGetNextStringLiteralOnScope();
-            }
-            break;
         }
     }
 
@@ -489,7 +485,7 @@ std::string Lexer::lxGetNextIdentifierOnScope()
  */
 std::string Lexer::lxGetNextStringLiteralOnScope()
 {
-    noway_assert(ttIsDoubleQuote(lxConsumeAndGetChar()), "Cannot extract string from string literal!");
+    noway_assert(ttIsDoubleQuote(lxGetPrivChar()), "Cannot extract string from string literal!");
     std::string literal;
 
     while (lxIsEOF())
@@ -621,14 +617,12 @@ const std::string MK_INCLUDE    = "include";
  * Returns :
  *      Macro object that parsed from lxTokenlizeMacro.
  */
-Macro* Lexer::lxTokenlizeNextMacro(bool skipSharpCheck)
+Macro* Lexer::lxTokenlizeNextMacro()
 {
-    if (!skipSharpCheck)
-    {
-        noway_assert(ttIsSharp(srcFileBuf[index++]), "Cannot extract macro type from string!");
-    }
+    noway_assert(ttIsSharp(lxGetPrivChar()), "Cannot extract macro type from string!");
 
-    std::string macroToken;
+    std::string              macroToken;
+    std::vector<std::string> macroOperands;
 
     while (lxIsEOF())
     {
@@ -645,6 +639,45 @@ Macro* Lexer::lxTokenlizeNextMacro(bool skipSharpCheck)
         break;
     }
 
+    {
+        std::string tempOperand;
+
+        bool hasBackSlash = false;
+        while (lxIsEOF())
+        {
+            char c = lxConsumeAndGetChar();
+
+            if (ttIsSpace(c))
+            {
+                if (!tempOperand.empty())
+                {
+                    macroOperands.push_back(tempOperand);
+                }
+            }
+
+            if (ttIsBackSlash(c))
+            {
+                hasBackSlash = true;
+            }
+
+            if (ttIsNextLine(c))
+            {
+                if (hasBackSlash)
+                {
+                    if (!ttIsBackSlash(lxGetPrivChar()))
+                    {
+                        // Emit warning.
+                    }
+
+                    hasBackSlash = false;
+                    continue;
+                }
+
+                break;
+            }
+        }
+    }
+
     // Apply change that parsed macro token.
     // so it will be work fine on MK_ELSE section.
     lxApplyChange();
@@ -655,36 +688,30 @@ Macro* Lexer::lxTokenlizeNextMacro(bool skipSharpCheck)
     }
     else if (macroToken == MacroKeyword::MK_UNDEF)
     {
-        lxSkipSpace();
-        return AllocateMacro(MacroType::MACRO_UNDEF, lxGetNextIdentifierOnScope());
+        // The token should have spaces on it.
+        // just for example #undef MACRO
+        // another tokens will be a unknown token
+        if (lxSkipSpace())
+        {
+            if (macroOperands.size() > 1)
+            {
+                // Emit warning.
+            }
+            return AllocateMacro(MacroType::MACRO_UNDEF, macroOperands[0]);
+        }
     }
     else if (macroToken == MacroKeyword::MK_IF)
     {
+        if (lxSkipSpace())
+        {
+            return AllocateMacro(MacroType::MACRO_IF, lxGetNextIdentifierOnScope());
+        }
     }
     else if (macroToken == MacroKeyword::MK_ELSE)
     {
-        if (lxSkipSpace() && !ttIsNextLine(lxGetCurrChar()))
-        {
-            std::string nextStmt = lxGetNextIdentifierOnScope();
-
-            if (nextStmt == MacroKeyword::MK_IF)
-            {
-                return AllocateMacro(MacroType::MACRO_ELSE_IF, lxGetNextIdentifierOnScope());
-            }
-            else
-            {
-                return AllocateMacro(MacroType::MACRO_ELSE, nextStmt);
-            }
-        }
-
-        return AllocateMacro(MacroType::MACRO_ELSE);
     }
     else if (macroToken == MacroKeyword::MK_ELSE_IF)
     {
-        lxSkipSpace();
-        std::string nextStmt = lxGetNextIdentifierOnScope();
-
-        return AllocateMacro(MacroType::MACRO_ELSE_IF, nextStmt);
     }
     else if (macroToken == MacroKeyword::MK_IF_DEF)
     {
@@ -697,22 +724,9 @@ Macro* Lexer::lxTokenlizeNextMacro(bool skipSharpCheck)
     }
     else if (macroToken == MacroKeyword::MK_DEFINED)
     {
-        lxSkipSpace();
-        return AllocateMacro(MacroType::MACRO_DEFINED, lxGetNextIdentifierOnScope());
     }
     else if (macroToken == MacroKeyword::MK_INCLUDE)
     {
-        bool        isLocalPath = false;
-        std::string includePath = lxGetNextFilenameFromInclude(isLocalPath);
-
-        if (isLocalPath)
-        {
-            return AllocateMacro(MacroType::MACRO_INCLUDE_LOCAL, includePath);
-        }
-        else
-        {
-            return AllocateMacro(MacroType::MACRO_INCLUDE_GLOBAL, includePath);
-        }
     }
 
     return nullptr;
