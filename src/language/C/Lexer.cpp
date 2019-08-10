@@ -396,7 +396,7 @@ MacroType Macro::GetMacroType() const
 // Lexer implements section.
 // ============================================
 
-Token* Lexer::AllocateToken(TokenType type) {} 
+Token* Lexer::AllocateToken(TokenType type) {}
 Token* Lexer::AllocateToken(TokenType type, std::string str) {}
 Token* Lexer::AllocateToken(TokenType type, char c) {}
 
@@ -639,6 +639,24 @@ Macro* Lexer::lxTokenlizeNextMacro()
         break;
     }
 
+    // This is for include keyword.
+    lxApplyChange();
+
+    if (macroToken == MacroKeyword::MK_INCLUDE)
+    {
+        bool        isLocalPath = false;
+        std::string includePath = lxGetNextFilenameFromInclude(isLocalPath);
+
+        if (isLocalPath)
+        {
+            return AllocateMacro(MacroType::MACRO_INCLUDE_LOCAL, includePath);
+        }
+        else
+        {
+            return AllocateMacro(MacroType::MACRO_INCLUDE_GLOBAL, includePath);
+        }
+    }
+    else
     {
         std::string tempOperand;
 
@@ -688,44 +706,62 @@ Macro* Lexer::lxTokenlizeNextMacro()
     }
     else if (macroToken == MacroKeyword::MK_UNDEF)
     {
-        // The token should have spaces on it.
-        // just for example #undef MACRO
-        // another tokens will be a unknown token
-        if (lxSkipSpace())
+        if (macroOperands.size() > 1)
         {
-            if (macroOperands.size() > 1)
-            {
-                // Emit warning.
-            }
-            return AllocateMacro(MacroType::MACRO_UNDEF, macroOperands[0]);
+            // Emit warning.
         }
+        return AllocateMacro(MacroType::MACRO_UNDEF, macroOperands[0]);
     }
     else if (macroToken == MacroKeyword::MK_IF)
     {
-        if (lxSkipSpace())
+        if (macroOperands.size() > 1)
         {
-            return AllocateMacro(MacroType::MACRO_IF, lxGetNextIdentifierOnScope());
+            // Emit warning.
         }
+
+        return AllocateMacro(MacroType::MACRO_IF, macroOperands[0]);
     }
     else if (macroToken == MacroKeyword::MK_ELSE)
     {
+        if (macroOperands.size() > 0)
+        {
+            // Emit warning.
+        }
+
+        return AllocateMacro(MacroType::MACRO_ELSE);
     }
     else if (macroToken == MacroKeyword::MK_ELSE_IF)
     {
+        if (macroOperands.size() > 1)
+        {
+            // Emit Warning
+        }
+
+        return AllocateMacro(MacroType::MACRO_ELSE_IF, macroOperands[0]);
     }
     else if (macroToken == MacroKeyword::MK_IF_DEF)
     {
+        if (macroOperands.size() > 1)
+        {
+            // Emit Warning
+        }
+
+        return AllocateMacro(MacroType::MACRO_IF_DEF, macroOperands[0]);
     }
     else if (macroToken == MacroKeyword::MK_IF_NOT_DEF)
     {
+        if (macroOperands.size() > 1)
+        {
+            // Emit Warning
+        }
+
+        return AllocateMacro(MacroType::MACRO_IF_NOT_DEF, macroOperands[0]);
     }
     else if (macroToken == MacroKeyword::MK_END_IF)
     {
+        return AllocateMacro(MacroType::MACRO_END_IF);
     }
     else if (macroToken == MacroKeyword::MK_DEFINED)
-    {
-    }
-    else if (macroToken == MacroKeyword::MK_INCLUDE)
     {
     }
 

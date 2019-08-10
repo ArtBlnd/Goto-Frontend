@@ -44,6 +44,9 @@ enum class MacroType
 
 class Macro
 {
+    std::string m_macroKey;
+    std::string m_macroExpr;
+
     MacroType m_mcrType   = MacroType::MACRO_UNKNOWN;
     size_t    m_mcrSize   = 0;
     size_t    m_mcrLine   = 0;
@@ -72,30 +75,18 @@ public:
 
     MacroType GetMacroType() const;
 
+    void               SetKey(std::string key);
+    const std::string& GetKey() const;
+
     void               SetExpr(std::string expr);
     const std::string& GetExpr() const;
 
     std::string ExpandDefineExpr();
-    std::string ExpandDefineExpr(std::vector<std::string> Operands);
+    std::string ExpandDefineExpr(std::vector<std::string>& Operands);
 
     bool ExpandCondtionalExpr();
 
     std::string ExpandIncludeExpr();
-};
-
-class MacroExprOpStr : public Macro
-{
-    std::string macroExpr;
-};
-
-class MacroExprOpChar : public Macro
-{
-    char* macroExpr;
-};
-
-class MacroExprOpPtr : public Macro
-{
-    Macro* macroExpr;
 };
 
 class MacroContext
