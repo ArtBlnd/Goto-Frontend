@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#include <language/ILexer.h>
+
 namespace Goto
 {
 namespace Basic
@@ -257,21 +259,8 @@ public:
     bool isEmpty() const;
 };
 
-class Lexer
+class Lexer : public ILexer
 {
-    const char* lxSrcFileBuf = nullptr;
-    size_t      lxSrcFileLen = 0;
-
-    // Trace informations
-    size_t lxIndex        = 0;
-    size_t lxCurrentColmn = 0;
-    size_t lxCurrentLine  = 0;
-
-    bool IsEOF() const;
-    char ConsumeChar();
-    void UngetChar();
-    char GetCurrentChar();
-
     TokenContext* lxTokenContext = nullptr;
     MacroContext* lxMacroContext = nullptr;
 
@@ -281,8 +270,6 @@ class Lexer
 
     Macro* AllocateMacro(MacroType type);
     Macro* AllocateMacro(MacroType type, std::string expr);
-
-    bool lxSkipSpaces();
 
     std::string lxGetNextFilenameFromInclude(bool& isLocalPath);
     std::string lxGetNextIdentifierOnScope();

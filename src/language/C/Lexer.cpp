@@ -10,7 +10,6 @@ namespace Language
 namespace C
 {
 
-
 inline bool IsSpecalSym(const char c)
 {
     return ttIsColon(c) |          // :
@@ -397,21 +396,6 @@ MacroType Macro::GetMacroType() const
 // Lexer implements section.
 // ============================================
 
-// Macro keyword token table.
-namespace MacroKeyword
-{
-const std::string MK_DEFINE     = "define";
-const std::string MK_UNDEF      = "undef";
-const std::string MK_IF         = "if";
-const std::string MK_ELSE       = "else";
-const std::string MK_ELSE_IF    = "elif";
-const std::string MK_IF_DEF     = "ifdef";
-const std::string MK_IF_NOT_DEF = "ifndef";
-const std::string MK_END_IF     = "endif";
-const std::string MK_DEFINED    = "defined";
-const std::string MK_INCLUDE    = "include";
-} // namespace MacroKeyword
-
 /* lxTokenlizeSourceCode
  *
  * Description:
@@ -435,7 +419,7 @@ bool lxTokenlizeSourceCode(TokenContext* tContext, MacroContext* mContext, const
 // Lexer Implements
 //
 Lexer::Lexer(TokenContext* tContext, MacroContext* mContext, const char* srcFileBuf, size_t srcFileLen)
-    : lxTokenContext(tContext), lxMacroContext(mContext), lxSrcFileBuf(srcFileBuf), lxSrcFileLen(srcFileLen)
+    : lxTokenContext(tContext), lxMacroContext(mContext), ILexer(srcFileBuf, srcFileLen)
 {
     noway_assert(lxTokenContext, "Token context cannot be nullptr!");
     noway_assert(lxMacroContext, "Macro context cannot be nullptr!");
@@ -443,63 +427,11 @@ Lexer::Lexer(TokenContext* tContext, MacroContext* mContext, const char* srcFile
     noway_assert(lxSrcFileLen, "Source file length cannot be zero!");
 }
 
-bool Lexer::IsEOF() const
-{
-    if (lxIndex == lxSrcFileLen)
-    {
-        return true;
-    }
-
-    return false;
-}
-
-char Lexer::ConsumeChar()
-{
-    char c = lxSrcFileBuf[lxIndex++];
-
-    if (ttIsNextLine(c))
-    {
-        lxCurrentColmn = 0;
-        lxCurrentLine++;
-    }
-    else
-    {
-        lxCurrentColmn++;
-    }
-
-    return c;
-}
-
-void Lexer::UngetChar()
-{
-    lxIndex--;
-
-    if (ttIsNextLine(GetCurrentChar()))
-    {
-        for (size_t index = lxIndex; ttIsNextLine(lxSrcFileBuf[index]); index--)
-        {
-            lxCurrentColmn++;
-            noway_assert(index > 0);
-        }
-
-        lxCurrentLine--;
-    }
-    else
-    {
-        lxCurrentColmn--;
-    }
-}
-
-char Lexer::GetCurrentChar()
-{
-    return lxSrcFileBuf[lxIndex];
-}
-
 bool Lexer::lxStartTokenlizeSourceCode()
 {
-    while (IsEOF())
+    while (lxIsEOF())
     {
-        const char c = ConsumeChar();
+        const char c = lxConsumeAndGetChar();
         if (ttIsSharp(c))
         {
             Macro* newMacro = lxTokenlizeNextMacro();
@@ -516,6 +448,7 @@ bool Lexer::lxStartTokenlizeSourceCode()
             break;
         }
     }
+
     return false;
 }
 
@@ -528,21 +461,22 @@ bool Lexer::lxStartTokenlizeSourceCode()
  */
 std::string Lexer::lxGetNextIdentifierOnScope()
 {
-    noway_assert(ttIsSpecalSym(ConsumeChar()), "Identifier should not start with specal symbols!");
+    noway_assert(IsSpecalSym(lxGetCurrChar()), "Identifier should not start with specal symbols!");
 
     std::string identifier;
-    while (IsEOF())
+    while (lxIsEOF())
     {
-        char c = ConsumeChar();
+        char c = lxGetCurrChar();
 
         if (IsSpecalSym(c))
         {
             break;
         }
+
         identifier += c;
+        lxConsumeChar();
     }
 
-    UngetChar();
     return identifier;
 }
 
@@ -555,12 +489,12 @@ std::string Lexer::lxGetNextIdentifierOnScope()
  */
 std::string Lexer::lxGetNextStringLiteralOnScope()
 {
-    noway_assert(ttIsDoubleQuote(ConsumeChar()), "Cannot extract string from string literal!");
+    noway_assert(ttIsDoubleQuote(lxConsumeAndGetChar()), "Cannot extract string from string literal!");
     std::string literal;
 
-    while (IsEOF())
+    while (lxIsEOF())
     {
-        char c = ConsumeChar();
+        char c = lxConsumeAndGetChar();
 
         literal += c;
         if (ttIsDoubleQuote(c))
@@ -583,16 +517,16 @@ std::string Lexer::lxGetNextStringLiteralOnScope()
  */
 std::string Lexer::lxGetNextFilenameFromInclude(bool& isLocalPath)
 {
-    const char initialC = ConsumeChar();
+    const char initialC = lxConsumeAndGetChar();
     noway_assert(ttIsSpace(initialC) || ttIsDoubleQuote(initialC) || ttIsLessThanSym(initialC),
                  "Cannot extract include path from string!");
 
     std::string fileName;
 
     bool startRecord = false;
-    while (IsEOF())
+    while (lxIsEOF())
     {
-        char c = ConsumeChar();
+        char c = lxConsumeAndGetChar();
 
         if (startRecord)
         {
@@ -636,9 +570,9 @@ std::string Lexer::lxTokenlizeNextMacroOperands()
     std::string macroOperand;
 
     bool isBackSlashFound = false;
-    while (IsEOF())
+    while (lxIsEOF())
     {
-        char c = ConsumeChar();
+        char c = lxConsumeAndGetChar();
         if (!ttIsNextLine(c))
         {
             if (ttIsBackSlash(c))
@@ -662,6 +596,23 @@ std::string Lexer::lxTokenlizeNextMacroOperands()
     return macroOperand;
 }
 
+// Macro keyword token table.
+namespace MacroKeyword
+{
+
+const std::string MK_DEFINE     = "define";
+const std::string MK_UNDEF      = "undef";
+const std::string MK_IF         = "if";
+const std::string MK_ELSE       = "else";
+const std::string MK_ELSE_IF    = "elif";
+const std::string MK_IF_DEF     = "ifdef";
+const std::string MK_IF_NOT_DEF = "ifndef";
+const std::string MK_END_IF     = "endif";
+const std::string MK_DEFINED    = "defined";
+const std::string MK_INCLUDE    = "include";
+
+} // namespace MacroKeyword
+
 /* lxTokenlizeMacro
  *
  * Description:
@@ -679,9 +630,9 @@ Macro* Lexer::lxTokenlizeNextMacro(bool skipSharpCheck)
 
     std::string macroToken;
 
-    while (IsEOF())
+    while (lxIsEOF())
     {
-        char c = ConsumeChar();
+        char c = lxConsumeAndGetChar();
         if (!ttIsSpace(c))
         {
             if (!ttIsAlphabet(c))
@@ -694,13 +645,17 @@ Macro* Lexer::lxTokenlizeNextMacro(bool skipSharpCheck)
         break;
     }
 
+    // Apply change that parsed macro token.
+    // so it will be work fine on MK_ELSE section.
+    lxApplyChange();
+
     // Start identifying macro types.
     if (macroToken == MacroKeyword::MK_DEFINE)
     {
     }
     else if (macroToken == MacroKeyword::MK_UNDEF)
     {
-        lxSkipSpaces();
+        lxSkipSpace();
         return AllocateMacro(MacroType::MACRO_UNDEF, lxGetNextIdentifierOnScope());
     }
     else if (macroToken == MacroKeyword::MK_IF)
@@ -708,10 +663,28 @@ Macro* Lexer::lxTokenlizeNextMacro(bool skipSharpCheck)
     }
     else if (macroToken == MacroKeyword::MK_ELSE)
     {
+        if (lxSkipSpace() && !ttIsNextLine(lxGetCurrChar()))
+        {
+            std::string nextStmt = lxGetNextIdentifierOnScope();
+
+            if (nextStmt == MacroKeyword::MK_IF)
+            {
+                return AllocateMacro(MacroType::MACRO_ELSE_IF, lxGetNextIdentifierOnScope());
+            }
+            else
+            {
+                return AllocateMacro(MacroType::MACRO_ELSE, nextStmt);
+            }
+        }
+
         return AllocateMacro(MacroType::MACRO_ELSE);
     }
     else if (macroToken == MacroKeyword::MK_ELSE_IF)
     {
+        lxSkipSpace();
+        std::string nextStmt = lxGetNextIdentifierOnScope();
+
+        return AllocateMacro(MacroType::MACRO_ELSE_IF, nextStmt);
     }
     else if (macroToken == MacroKeyword::MK_IF_DEF)
     {
@@ -724,7 +697,7 @@ Macro* Lexer::lxTokenlizeNextMacro(bool skipSharpCheck)
     }
     else if (macroToken == MacroKeyword::MK_DEFINED)
     {
-        lxSkipSpaces();
+        lxSkipSpace();
         return AllocateMacro(MacroType::MACRO_DEFINED, lxGetNextIdentifierOnScope());
     }
     else if (macroToken == MacroKeyword::MK_INCLUDE)
