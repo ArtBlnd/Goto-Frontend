@@ -266,7 +266,6 @@ class Lexer : public ILexer
     std::string lxGetNextStringLiteralOnScope();
 
     Macro*      lxTokenlizeNextMacro();
-    std::string lxTokenlizeNextMacroOperands();
 
 public:
     Lexer() = delete;

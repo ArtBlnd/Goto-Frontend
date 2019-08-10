@@ -561,36 +561,6 @@ std::string Lexer::lxGetNextFilenameFromInclude(bool& isLocalPath)
     return fileName;
 }
 
-std::string Lexer::lxTokenlizeNextMacroOperands()
-{
-    std::string macroOperand;
-
-    bool isBackSlashFound = false;
-    while (lxIsEOF())
-    {
-        char c = lxConsumeAndGetChar();
-        if (!ttIsNextLine(c))
-        {
-            if (ttIsBackSlash(c))
-            {
-                isBackSlashFound = true;
-            }
-
-            macroOperand += c;
-            continue;
-        }
-
-        if (isBackSlashFound)
-        {
-            isBackSlashFound = false;
-            continue;
-        }
-
-        break;
-    }
-
-    return macroOperand;
-}
 
 // Macro keyword token table.
 namespace MacroKeyword
@@ -658,6 +628,9 @@ Macro* Lexer::lxTokenlizeNextMacro()
     }
     else
     {
+        // We have to parse operands for other macros except include macro
+        // So parsing operands now and it will be used on macros that uses extra operands.
+
         std::string tempOperand;
 
         bool hasBackSlash = false;
@@ -697,7 +670,7 @@ Macro* Lexer::lxTokenlizeNextMacro()
     }
 
     // Apply change that parsed macro token.
-    // so it will be work fine on MK_ELSE section.
+    // not to make troble on other parsing or lexing section.
     lxApplyChange();
 
     // Start identifying macro types.
