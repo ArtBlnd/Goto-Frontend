@@ -442,6 +442,36 @@ bool Lexer::lxStartTokenlizeSourceCode()
         if (ttIsSharp(c))
         {
             Macro* newMacro = lxTokenlizeNextMacro();
+
+            // Handling includes
+            if (newMacro->IsMacroInclude())
+            {
+                const std::string& includePath = newMacro->GetExpr();
+
+                if (newMacro->IsMacroIncludeGlobal())
+                {
+                }
+                else
+                {
+                }
+            }
+
+
+            if (newMacro->IsMacroDefine())
+            {
+                if (lxMacroContext->LookupDefineTable(newMacro->GetKey()) != nullptr)
+                {
+                    // Same macro is on macro table. emit warning.
+                }
+                else
+                {
+                    lxMacroContext->InsertDefineTable(newMacro->GetKey(), newMacro);
+                }
+            }
+            if (newMacro->IsMacroUndef())
+            {
+                lxMacroContext->RemoveDefineTable(newMacro->GetKey());
+            }
         }
     }
 
@@ -561,7 +591,6 @@ std::string Lexer::lxGetNextFilenameFromInclude(bool& isLocalPath)
     return fileName;
 }
 
-
 // Macro keyword token table.
 namespace MacroKeyword
 {
@@ -628,9 +657,11 @@ Macro* Lexer::lxTokenlizeNextMacro()
     }
     else
     {
-        // We have to parse operands for other macros except include macro
-        // So parsing operands now and it will be used on macros that uses extra operands.
+        // You'll need to handle `,` `)` `(` tokens if its define macro.
+        bool isDefineMacro = (macroToken == MacroKeyword::MK_DEFINE);
 
+        // We have to parse operands for other macros except include and define macro
+        // So parsing operands now and it will be used on macros that uses extra operands.
         std::string tempOperand;
 
         bool hasBackSlash = false;
@@ -643,6 +674,18 @@ Macro* Lexer::lxTokenlizeNextMacro()
                 if (!tempOperand.empty())
                 {
                     macroOperands.push_back(tempOperand);
+                }
+            }
+
+            if (isDefineMacro)
+            {
+                if (ttIsComma(c) | ttIsParen(c, false) | ttIsParen(c, true))
+                {
+                    if (!tempOperand.empty())
+                    {
+                        macroOperands.push_back(tempOperand);
+                    }
+                    macroOperands.push_back(std::string(&c, 1));
                 }
             }
 
@@ -673,7 +716,7 @@ Macro* Lexer::lxTokenlizeNextMacro()
     // not to make troble on other parsing or lexing section.
     lxApplyChange();
 
-    // Start identifying macro types.
+    // Start identifying macro types except include. include token will be handled specally
     if (macroToken == MacroKeyword::MK_DEFINE)
     {
     }

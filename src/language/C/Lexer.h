@@ -42,10 +42,25 @@ enum class MacroType
     MACRO_INCLUDE_LOCAL  = 0x0B,
 };
 
+class MacroFunc
+{
+
+};
+
+class MacroFuncDefine : public MacroFunc
+{
+    std::vector<std::string> Operands;
+    std::string              Expression;
+};
+
+class MacroFuncString : public MacroFunc
+{
+    std::string Expression;
+};
+
 class Macro
 {
     std::string m_macroKey;
-    std::string m_macroExpr;
 
     MacroType m_mcrType   = MacroType::MACRO_UNKNOWN;
     size_t    m_mcrSize   = 0;
@@ -61,6 +76,9 @@ public:
     bool IsMacroType(MacroType type) const;
 
     bool IsUnknown() const;
+    bool IsMacroInclude() const;
+    bool IsMacroIncludeGlobal() const;
+    bool IsMacroIncludeLocal() const;
     bool IsMacroDefine() const;
     bool IsMacroUndef() const;
     bool IsMacroIf() const;
@@ -70,8 +88,7 @@ public:
     bool IsMacroIfNotDefine() const;
     bool IsMacroEndIf() const;
     bool IsMacroDefined() const;
-    bool IsMacroIncludeGlobal() const;
-    bool IsMacroIncludeLocal() const;
+    
 
     MacroType GetMacroType() const;
 
@@ -80,11 +97,6 @@ public:
 
     void               SetExpr(std::string expr);
     const std::string& GetExpr() const;
-
-    std::string ExpandDefineExpr();
-    std::string ExpandDefineExpr(std::vector<std::string>& Operands);
-
-    bool ExpandCondtionalExpr();
 
     std::string ExpandIncludeExpr();
 };
@@ -100,6 +112,8 @@ public:
     Macro* GetPredefLine(Token* targetToken);
     Macro* GetPredefTime();
 
+    void   InsertDefineTable(std::string Key, Macro* macro);
+    void   RemoveDefineTable(std::string Key);
     Macro* LookupDefineTable(std::string key);
 };
 
@@ -265,7 +279,7 @@ class Lexer : public ILexer
     std::string lxGetNextIdentifierOnScope();
     std::string lxGetNextStringLiteralOnScope();
 
-    Macro*      lxTokenlizeNextMacro();
+    Macro* lxTokenlizeNextMacro();
 
 public:
     Lexer() = delete;
