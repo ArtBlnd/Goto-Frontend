@@ -1,4 +1,6 @@
 #include "basic/Debug.h"
+#include "basic/FileUtils.h"
+#include "basic/Engine.h"
 
 #include "language/TokenTable.h"
 #include "language/C/Lexer.h"
@@ -448,14 +450,11 @@ bool Lexer::lxStartTokenlizeSourceCode()
             {
                 const std::string& includePath = newMacro->GetExpr();
 
-                if (newMacro->IsMacroIncludeGlobal())
+                if (!lxTryIncludeFile(includePath, newMacro->IsMacroIncludeLocal()))
                 {
-                }
-                else
-                {
+                    // TODO emit error.
                 }
             }
-
 
             if (newMacro->IsMacroDefine())
             {
@@ -782,6 +781,11 @@ Macro* Lexer::lxTokenlizeNextMacro()
     }
 
     return nullptr;
+}
+
+bool Lexer::lxTryIncludeFile(const std::string& filePath, bool isLocal)
+{
+    
 }
 
 } // namespace C

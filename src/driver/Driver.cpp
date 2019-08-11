@@ -41,5 +41,6 @@ bool ExecuteCompilerEngine(CommandLineContext* CLIContext)
     std::unique_ptr<Basic::Engine> engine = engineBuilder.BuildEngine();
     return engine->StartCompile();
 }
+
 } // namespace Driver
 } // namespace Goto

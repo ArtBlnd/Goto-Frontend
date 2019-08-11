@@ -7,7 +7,7 @@ project(GTFW_C_Frontend)
 #
 set(Goto_C_FRONTEND_SRC_PATH "${CMAKE_CURRENT_SOURCE_DIR}/src/")
 set(Goto_C_FRONTEND_INC_PATH "${CMAKE_CURRENT_SOURCE_DIR}/src/")
-set(Goto_C_FRONTEND_TEST_PATH "${CMAKE_CURRENT_SOURCE_DIR}/test/")
+set(Goto_C_FRONTEND_TEST_PATH "${CMAKE_CURRENT_SOURCE_DIR}/tests/")
 set(Goto_C_FRONTEND_DEPS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/deps/")
 
 #
@@ -33,6 +33,6 @@ add_subdirectory(${Goto_C_FRONTEND_INC_PATH})
 #
 option(ENABLE_TESTS "Enables building tests using GTest" ON)
 if(ENABLE_TESTS)
-    include(cmake/AddTest.cmake)
+    include(scripts/AddTest.cmake)
     add_subdirectory(${Goto_C_FRONTEND_TEST_PATH})
 endif()

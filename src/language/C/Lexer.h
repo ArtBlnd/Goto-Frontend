@@ -281,6 +281,8 @@ class Lexer : public ILexer
 
     Macro* lxTokenlizeNextMacro();
 
+    bool lxTryIncludeFile(const std::string& filePath, bool isLocal);
+
 public:
     Lexer() = delete;
     Lexer(TokenContext* tContext, MacroContext* mContext, const char* srcFileBuf, size_t srcFileLen);

@@ -3,6 +3,11 @@
 
 namespace Goto
 {
+namespace Basic
+{
+    class Engine;
+}
+
 namespace Language
 {
 
@@ -20,6 +25,8 @@ class ILexer
     size_t lxCurrLine   = 0;
 
 protected:
+    Basic::Engine* const lxParentEngine = nullptr;
+
     bool lxIsEOF();
     bool lxSkipSpace(bool applyChange = true);
 
