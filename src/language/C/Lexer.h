@@ -19,12 +19,20 @@ namespace Language
 namespace C
 {
 
-class Token;
-class TokenUnknown;
-class TokenLiteral;
-class TokenSymbol;
-class TokenIdentifier;
-class TokenWhitespace;
+class MacroFunc
+{
+};
+
+class MacroFuncDefine : public MacroFunc
+{
+    std::vector<std::string> Operands;
+    std::string              Expression;
+};
+
+class MacroFuncString : public MacroFunc
+{
+    std::string Expression;
+};
 
 enum class MacroType
 {
@@ -42,22 +50,6 @@ enum class MacroType
     MACRO_INCLUDE_LOCAL  = 0x0B,
     MACRO_PRAGMA         = 0x0C,
     MACRO_ERROR          = 0x0D,
-};
-
-class MacroFunc
-{
-
-};
-
-class MacroFuncDefine : public MacroFunc
-{
-    std::vector<std::string> Operands;
-    std::string              Expression;
-};
-
-class MacroFuncString : public MacroFunc
-{
-    std::string Expression;
 };
 
 class Macro
@@ -92,17 +84,11 @@ public:
     bool IsMacroDefined() const;
     bool IsMacroPragma() const;
     bool IsMacroError() const;
-    
 
     MacroType GetMacroType() const;
 
     void               SetKey(std::string key);
     const std::string& GetKey() const;
-
-    void               SetExpr(std::string expr);
-    const std::string& GetExpr() const;
-
-    std::string ExpandIncludeExpr();
 };
 
 class MacroContext
@@ -129,6 +115,13 @@ enum class TokenType
     TOKEN_IDENTIFIER = 0x03,
     TOKEN_WHITESPACE = 0x04
 };
+
+class Token;
+class TokenUnknown;
+class TokenLiteral;
+class TokenSymbol;
+class TokenIdentifier;
+class TokenWhitespace;
 
 // class Token
 // Description :
@@ -237,6 +230,7 @@ protected:
     TokenIdentifier(size_t Line, size_t Column, std::string IdentifierToken);
 
 public:
+    const std::string& GetIdentifier();
 };
 
 // Its a whitespace :)

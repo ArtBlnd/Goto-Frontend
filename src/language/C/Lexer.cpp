@@ -464,6 +464,10 @@ bool Lexer::lxStartTokenlizeSourceCode()
     while (lxIsEOF())
     {
         const char c = lxGetCurrChar();
+
+        // We are trying to handle macros first
+        // parse it from lxTokenlizeNextMacro and identify it.
+        // some macros will be applied at this point.
         if (ttIsSharp(c))
         {
             Macro* newMacro = lxTokenlizeNextMacro();
@@ -471,7 +475,7 @@ bool Lexer::lxStartTokenlizeSourceCode()
             // Handling includes
             if (newMacro->IsMacroInclude())
             {
-                const std::string& includePath = newMacro->GetExpr();
+                const std::string& includePath = newMacro->GetKey();
 
                 if (!lxTryIncludeFile(includePath, newMacro->IsMacroIncludeLocal()))
                 {
@@ -681,6 +685,7 @@ Macro* Lexer::lxTokenlizeNextMacro()
     {
         // You'll need to handle `,` `)` `(` tokens if its define macro.
         bool isDefineMacro = (macroToken == MacroKeyword::MK_DEFINE);
+        bool isIfMacro     = (macroToken == MacroKeyword::MK_IF);
 
         // We have to parse operands for other macros except include and define macro
         // So parsing operands now and it will be used on macros that uses extra operands.
@@ -699,9 +704,25 @@ Macro* Lexer::lxTokenlizeNextMacro()
                 }
             }
 
+            // Define macro can have parens and comma (for function like macros)
+            // Handle it if its define macro
             if (isDefineMacro)
             {
                 if (ttIsComma(c) | ttIsParen(c, false) | ttIsParen(c, true))
+                {
+                    if (!tempOperand.empty())
+                    {
+                        macroOperands.push_back(tempOperand);
+                    }
+                    macroOperands.push_back(std::string(&c, 1));
+                }
+            }
+
+            // If macro can have `!` operator
+            // Handle it if its If macro
+            if (isIfMacro)
+            {
+                if (ttIsNotSym(c))
                 {
                     if (!tempOperand.empty())
                     {
@@ -752,9 +773,25 @@ Macro* Lexer::lxTokenlizeNextMacro()
     }
     else if (macroToken == MacroKeyword::MK_IF)
     {
-        if (macroOperands.size() > 1)
+        if (macroOperands.size() > 3)
         {
             // Emit warning.
+        }
+
+        if (macroOperands[0] == MacroKeyword::MK_DEFINED)
+        {
+            return AllocateMacro(MacroType::MACRO_IF_DEF, macroOperands[1]);
+        }
+        else if (macroOperands[0] == "!")
+        {
+            if (macroOperands[1] == MacroKeyword::MK_DEFINED)
+            {
+                return AllocateMacro(MacroType::MACRO_IF, macroOperands[2]);
+            }
+            else
+            {
+                return AllocateMacro(MacroType::MACRO_IF, macroOperands[1]);
+            }
         }
 
         return AllocateMacro(MacroType::MACRO_IF, macroOperands[0]);
@@ -798,9 +835,6 @@ Macro* Lexer::lxTokenlizeNextMacro()
     else if (macroToken == MacroKeyword::MK_END_IF)
     {
         return AllocateMacro(MacroType::MACRO_END_IF);
-    }
-    else if (macroToken == MacroKeyword::MK_DEFINED)
-    {
     }
 
     return nullptr;
