@@ -778,20 +778,31 @@ Macro* Lexer::lxTokenlizeNextMacro()
             // Emit warning.
         }
 
-        if (macroOperands[0] == MacroKeyword::MK_DEFINED)
+        if (macroOperands.size() == 3)
         {
-            return AllocateMacro(MacroType::MACRO_IF_DEF, macroOperands[1]);
+            if (macroOperands[0] == "!")
+            {
+                if (macroOperands[1] == MacroKeyword::MK_DEFINED)
+                {
+                    return AllocateMacro(MacroType::MACRO_IF_NOT_DEF, macroOperands[2]);
+                }
+                else
+                {
+                    return AllocateMacro(MacroType::MACRO_IF_DEF, macroOperands[1]);
+                }
+            }
+
+            // Emit warning.
         }
-        else if (macroOperands[0] == "!")
+
+        if (macroOperands.size() == 2)
         {
-            if (macroOperands[1] == MacroKeyword::MK_DEFINED)
+            if (macroOperands[0] == MacroKeyword::MK_DEFINED)
             {
-                return AllocateMacro(MacroType::MACRO_IF, macroOperands[2]);
+                return AllocateMacro(MacroType::MACRO_IF_DEF, macroOperands[1]);
             }
-            else
-            {
-                return AllocateMacro(MacroType::MACRO_IF, macroOperands[1]);
-            }
+
+            // Emit warning.
         }
 
         return AllocateMacro(MacroType::MACRO_IF, macroOperands[0]);
