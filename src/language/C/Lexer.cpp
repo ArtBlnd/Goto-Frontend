@@ -1,6 +1,4 @@
 #include "basic/Debug.h"
-#include "basic/FileUtils.h"
-#include "basic/Engine.h"
 
 #include "language/TokenTable.h"
 #include "language/C/Lexer.h"
@@ -334,6 +332,11 @@ bool Macro::IsUnknown() const
     return IsMacroType(MacroType::MACRO_UNKNOWN);
 }
 
+bool Macro::IsMacroInclude() const
+{
+    return IsMacroIncludeLocal() | IsMacroIncludeGlobal();
+}
+
 bool Macro::IsMacroDefine() const
 {
     return IsMacroType(MacroType::MACRO_DEFINE);
@@ -389,9 +392,29 @@ bool Macro::IsMacroIncludeLocal() const
     return IsMacroType(MacroType::MACRO_INCLUDE_LOCAL);
 }
 
+bool Macro::IsMacroPragma() const
+{
+    return IsMacroType(MacroType::MACRO_PRAGMA);
+}
+
+bool Macro::IsMacroError() const
+{
+    return IsMacroType(MacroType::MACRO_ERROR);
+}
+
 MacroType Macro::GetMacroType() const
 {
     return m_mcrType;
+}
+
+void Macro::SetKey(std::string key)
+{
+    m_macroKey = std::move(key);
+}
+
+const std::string& Macro::GetKey() const
+{
+    return m_macroKey;
 }
 
 // ============================================
@@ -781,11 +804,6 @@ Macro* Lexer::lxTokenlizeNextMacro()
     }
 
     return nullptr;
-}
-
-bool Lexer::lxTryIncludeFile(const std::string& filePath, bool isLocal)
-{
-    
 }
 
 } // namespace C

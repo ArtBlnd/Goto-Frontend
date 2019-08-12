@@ -40,6 +40,8 @@ enum class MacroType
     MACRO_DEFINED        = 0x09,
     MACRO_INCLUDE_GLOBAL = 0x0A,
     MACRO_INCLUDE_LOCAL  = 0x0B,
+    MACRO_PRAGMA         = 0x0C,
+    MACRO_ERROR          = 0x0D,
 };
 
 class MacroFunc
@@ -88,6 +90,8 @@ public:
     bool IsMacroIfNotDefine() const;
     bool IsMacroEndIf() const;
     bool IsMacroDefined() const;
+    bool IsMacroPragma() const;
+    bool IsMacroError() const;
     
 
     MacroType GetMacroType() const;
