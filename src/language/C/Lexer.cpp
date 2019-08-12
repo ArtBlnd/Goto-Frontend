@@ -407,14 +407,14 @@ MacroType Macro::GetMacroType() const
     return m_mcrType;
 }
 
-void Macro::SetKey(std::string key)
+void Macro::SetValue(std::string key)
 {
-    m_macroKey = std::move(key);
+    m_macroValue = std::move(key);
 }
 
-const std::string& Macro::GetKey() const
+const std::string& Macro::GetValue() const
 {
-    return m_macroKey;
+    return m_macroValue;
 }
 
 // ============================================
@@ -475,7 +475,7 @@ bool Lexer::lxStartTokenlizeSourceCode()
             // Handling includes
             if (newMacro->IsMacroInclude())
             {
-                const std::string& includePath = newMacro->GetKey();
+                const std::string& includePath = newMacro->GetValue();
 
                 if (!lxTryIncludeFile(includePath, newMacro->IsMacroIncludeLocal()))
                 {
@@ -485,18 +485,18 @@ bool Lexer::lxStartTokenlizeSourceCode()
 
             if (newMacro->IsMacroDefine())
             {
-                if (lxMacroContext->LookupDefineTable(newMacro->GetKey()) != nullptr)
+                if (lxMacroContext->LookupDefineTable(newMacro->GetValue()) != nullptr)
                 {
                     // Same macro is on macro table. emit warning.
                 }
                 else
                 {
-                    lxMacroContext->InsertDefineTable(newMacro->GetKey(), newMacro);
+                    lxMacroContext->InsertDefineTable(newMacro->GetValue(), newMacro);
                 }
             }
             if (newMacro->IsMacroUndef())
             {
-                lxMacroContext->RemoveDefineTable(newMacro->GetKey());
+                lxMacroContext->RemoveDefineTable(newMacro->GetValue());
             }
         }
     }
@@ -691,18 +691,11 @@ Macro* Lexer::lxTokenlizeNextMacro()
         // So parsing operands now and it will be used on macros that uses extra operands.
         std::string tempOperand;
 
-        bool hasBackSlash = false;
+        bool hasBackSlash       = false;
+        bool enableCaptureSpace = false;
         while (lxIsEOF())
         {
             char c = lxConsumeAndGetChar();
-
-            if (ttIsSpace(c))
-            {
-                if (!tempOperand.empty())
-                {
-                    macroOperands.push_back(tempOperand);
-                }
-            }
 
             // Define macro can have parens and comma (for function like macros)
             // Handle it if its define macro
@@ -730,6 +723,16 @@ Macro* Lexer::lxTokenlizeNextMacro()
                     }
                     macroOperands.push_back(std::string(&c, 1));
                 }
+
+                // Capture spaces if its on scope and its if token.
+                if (ttIsParen(c, false))
+                {
+                    enableCaptureSpace = true;
+                }
+                if (ttIsParen(c, true))
+                {
+                    enableCaptureSpace = false;
+                }
             }
 
             if (ttIsBackSlash(c))
@@ -752,6 +755,16 @@ Macro* Lexer::lxTokenlizeNextMacro()
 
                 break;
             }
+
+            if (ttIsSpace(c) && !enableCaptureSpace)
+            {
+                if (!tempOperand.empty())
+                {
+                    macroOperands.push_back(tempOperand);
+                }
+            }
+
+            tempOperand += c;
         }
     }
 
@@ -778,6 +791,11 @@ Macro* Lexer::lxTokenlizeNextMacro()
             // Emit warning.
         }
 
+        // Handling follow expressions
+        // #if !`expr`
+        // #if !defined(`expr`)
+        // #if not `expr`
+        // #if not defined(`expr`)
         if (macroOperands.size() == 3)
         {
             if (macroOperands[0] == "!")
@@ -795,6 +813,9 @@ Macro* Lexer::lxTokenlizeNextMacro()
             // Emit warning.
         }
 
+        // Handling follow expressions
+        // #if `expr`
+        // #if defined(`expr`)
         if (macroOperands.size() == 2)
         {
             if (macroOperands[0] == MacroKeyword::MK_DEFINED)
@@ -805,6 +826,8 @@ Macro* Lexer::lxTokenlizeNextMacro()
             // Emit warning.
         }
 
+        // Handling follow expressions
+        // #if `expr`
         return AllocateMacro(MacroType::MACRO_IF, macroOperands[0]);
     }
     else if (macroToken == MacroKeyword::MK_ELSE)

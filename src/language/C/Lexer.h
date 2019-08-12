@@ -54,7 +54,7 @@ enum class MacroType
 
 class Macro
 {
-    std::string m_macroKey;
+    std::string m_macroValue;
 
     MacroType m_mcrType   = MacroType::MACRO_UNKNOWN;
     size_t    m_mcrSize   = 0;
@@ -87,8 +87,8 @@ public:
 
     MacroType GetMacroType() const;
 
-    void               SetKey(std::string key);
-    const std::string& GetKey() const;
+    void               SetValue(std::string key);
+    const std::string& SetValue() const;
 };
 
 class MacroContext
