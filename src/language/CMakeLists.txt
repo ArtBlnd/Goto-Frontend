@@ -1,8 +1,10 @@
 
 set(GOTO_LANGUAGE_SRC
+    Lexer.cpp
+    Lexer.h
+    Parser.cpp
+    Parser.h
     TokenVerifier.cpp
     TokenVerifier.h
     Transforms.cpp
     Transforms.h)
-
-add_subdirectory(C)
