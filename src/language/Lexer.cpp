@@ -158,9 +158,15 @@ std::string Lexer::lxParseStringBeforeEnd(std::function<bool(char)> endFunc)
     return token;
 }
 
+/* StartLexSourceCode
+ *
+ * Description:
+ *      Implmenetation of lexing codes.
+ * Returns :
+ *      Returning true if successed to lex source code
+ */
 bool Lexer::StartLexSourceCode()
 {
-
     while (lxIsEOF())
     {
 
