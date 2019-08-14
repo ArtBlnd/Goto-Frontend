@@ -1,3 +1,3 @@
-# C-Frontend
+# Goto-Frontend
 
 THIS PROJECT IS ON PROGRESS, NOTHING IS WORKING.
