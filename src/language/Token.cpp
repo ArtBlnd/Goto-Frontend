@@ -6,9 +6,9 @@ namespace Goto
 namespace Language
 {
 
-// ============================================
+// ============================================================
 // Token Implements
-// ============================================
+// ============================================================
 
 Token::Token(TokenType Type, size_t Size, size_t Line, size_t Column)
 {
@@ -128,9 +128,9 @@ TokenWhitespace* Token::AsWhitespace()
     return nullptr;
 }
 
-// ============================================
+// ============================================================
 // Token Unknown Implements
-// ============================================
+// ============================================================
 
 TokenUnknown::TokenUnknown(size_t Line, size_t Column, char UnknownToken)
     : Token(TokenType::TOKEN_UNKNOWN, 1 /* One Char */, Line, Column)
@@ -148,9 +148,9 @@ constexpr char TokenUnknown::Get() const
     return m_tkUnknown;
 }
 
-// ============================================
+// ============================================================
 // Token Literal Implements
-// ============================================
+// ============================================================
 
 TokenLiteral::TokenLiteral(size_t Line, size_t Column, std::string SymbolLiteral)
     : Token(TokenType::TOKEN_LITERAL, SymbolLiteral.length(), Line, Column)
@@ -190,9 +190,9 @@ std::string TokenLiteral::Get() const
     return m_tkLiteral;
 }
 
-// ============================================
+// ============================================================
 // Token Symbol Implements
-// ============================================
+// ============================================================
 
 TokenSymbol::TokenSymbol(size_t Line, size_t Column, char SymbolToken)
     : Token(TokenType::TOKEN_SYMBOL, 1 /* One Char */, Line, Column)
@@ -235,9 +235,9 @@ bool TokenSymbol::IsSymbolAsterisk() const
     return ttIsAsterisk(Get());
 }
 
-// ============================================
+// ============================================================
 // Token Identifier Implements
-// ============================================
+// ============================================================
 
 TokenIdentifier::TokenIdentifier(size_t Line, size_t Column, std::string IdentifierToken)
     : Token(TokenType::TOKEN_IDENTIFIER, IdentifierToken.size(), Line, Column)
@@ -245,9 +245,9 @@ TokenIdentifier::TokenIdentifier(size_t Line, size_t Column, std::string Identif
     m_tkIdentifier = IdentifierToken;
 }
 
-// ============================================
+// ============================================================
 // Token Whitespace Implements
-// ============================================
+// ============================================================
 
 TokenWhitespace::TokenWhitespace(size_t Size, size_t Line, size_t Column)
     : Token(TokenType::TOKEN_WHITESPACE, Size, Line, Column)
