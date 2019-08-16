@@ -2,11 +2,14 @@
 #define __GOTO_FRONTEND_LANGUAGE_LEXER_DIRECTIVE_H__
 
 #include <string>
+#include <vector>
 
 namespace Goto
 {
 namespace Language
 {
+class Lexer;
+class LexerContext;
 
 enum class DirectiveType
 {
@@ -30,8 +33,9 @@ enum class DirectiveFunc
 {
     DF_NO_OP       = 0x01,
     DF_OP1         = 0x02,
-    DF_FUNC_DEFINE = 0x03,
-    DF_PRAGMA      = 0x04,
+    DF_OP2         = 0x03,
+    DF_FUNC_DEFINE = 0x04,
+    DF_PRAGMA      = 0x05,
 
     DF_UNKNOWN = 0xFF
 };
@@ -43,31 +47,43 @@ class DirectiveDefine;
 class DirectivePragma;
 class Directive
 {
+    size_t dtId = (size_t)(-1);
+
     DirectiveType dtType = DirectiveType::DT_UNKNOWN;
     DirectiveFunc dtFunc = DirectiveFunc::DF_UNKNOWN;
 
+protected:
+    Directive() = delete;
+    Directive(DirectiveType type, DirectiveFunc func, size_t id);
+    Directive(DirectiveType type, DirectiveFunc func);
+
 public:
-    DirectiveType GetType();
-    DirectiveFunc GetFunc();
+    DirectiveType GetType() const;
+    DirectiveFunc GetFunc() const;
 
     DirectiveNoOp* AsDirectiveNoOp();
-    bool           IsDirectiveNoOp();
+    bool           IsDirectiveNoOp() const;
 
     DirectiveOp1* AsDirectiveOp1();
-    bool          IsDirectiveOp1();
+    bool          IsDirectiveOp1() const;
 
     DirectiveOp2* AsDirectiveOp2();
-    bool          IsDirectiveOp2();
+    bool          IsDirectiveOp2() const;
 
     DirectiveFuncDefine* AsDirectiveFuncDefine();
-    bool                 IsDirectiveFuncDefine();
+    bool                 IsDirectiveFuncDefine() const;
 
     DirectivePragma* AsDirectivePragma();
-    bool             IsDirectivePragma();
+    bool             IsDirectivePragma() const;
+
+    // This is used for check that directive is same directive when its caching.
+    // The id should same when recording resolved expression on directive cache
+    size_t GetID() const;
 };
 
 class DirectiveNoOp : public Directive
 {
+    // Handling it as directive itself.
 };
 
 class DirectiveOp1 : public Directive
@@ -84,6 +100,7 @@ class DirectiveOp2 : public Directive
     std::string Op2;
 
 public:
+    const std::string& GetOp1();
     const std::string& GetOp2();
 };
 
@@ -93,11 +110,22 @@ class DirectiveFuncDefine : public Directive
     std::vector<std::string> Params;
 
 public:
+    size_t GetParamSize() const;
+
     const std::string& GetExpr();
     const std::string& GetParamName(size_t index);
 
     bool ResolveDefineExpr(std::string Name, const std::vector<std::string>& Params);
-    bool ResolveDefineExpr(std::string Name);
+};
+
+class DirectiveIfStmt : public Directive
+{
+    std::string Expr;
+
+public:
+    const std::string& GetExpr();
+
+    bool ResolveIfStmt();
 };
 
 class DirectivePragma : public Directive
