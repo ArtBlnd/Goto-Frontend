@@ -30,26 +30,6 @@ bool ttIsBoolean(const std::string& str)
     return false;
 }
 
-bool ttIsAlphabet(const std::string& str)
-{
-    for (char c : str)
-    {
-        if (c >= 'a' && c <= 'z')
-        {
-            continue;
-        }
-
-        if (c >= 'A' && c <= 'Z')
-        {
-            continue;
-        }
-
-        return false;
-    }
-
-    return true;
-}
-
 bool ttIsAlphabet(const char c)
 {
     if (c >= 'a' && c <= 'z')

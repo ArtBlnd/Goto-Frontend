@@ -2,6 +2,7 @@
 #define __GTFW_C_FRONTEND_LANGUAGE_TOKEN_VERIFIER_H__
 
 #include <string>
+#include <functional>
 
 namespace Goto
 {
@@ -185,8 +186,45 @@ bool ttIsInteger(const std::string& str);
 bool ttIsBoolean(const std::string& str);
 
 // Type : 'a > | z <' (ALPHABET)
-bool ttIsAlphabet(const std::string& str);
 bool ttIsAlphabet(const char c);
+
+class ttIsMacroOperandEndFunc
+{
+    bool isBackslashFound = false;
+
+public:
+    bool operator()(char c)
+    {
+        if (ttIsBackSlash(c))
+        {
+            isBackslashFound = true;
+        }
+        if (ttIsNextLine(c))
+        {
+            if (isBackslashFound)
+            {
+                isBackslashFound = false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+};
+
+#define ttIsMacroOperandEnd ttIsMacroOperandEndFunc()
+
+inline std::function<bool(char)> ttInverse(std::function<bool(char)> func)
+{
+    return [=](char c) { return !func(c); };
+}
+
+inline std::function<bool(char)> ttInverse(char token)
+{
+    return [=](char c) { return c != token; };
+}
 
 // Fast token comparer if its under 16 bytes.
 // this use normalization which is change 16 byte char array into integer and compare.
