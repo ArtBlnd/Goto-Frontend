@@ -43,7 +43,7 @@ enum class DirectiveFunc
 class DirectiveNoOp;
 class DirectiveOp1;
 class DirectiveOp2;
-class DirectiveDefine;
+class DirectiveFuncDefine;
 class DirectivePragma;
 class Directive
 {
@@ -54,8 +54,9 @@ class Directive
 
 protected:
     Directive() = delete;
-    Directive(DirectiveType type, DirectiveFunc func, size_t id);
     Directive(DirectiveType type, DirectiveFunc func);
+
+    void SetId(size_t id);
 
 public:
     DirectiveType GetType() const;
@@ -83,6 +84,8 @@ public:
 
 class DirectiveNoOp : public Directive
 {
+public:
+    DirectiveNoOp(DirectiveType type);
     // Handling it as directive itself.
 };
 
@@ -112,7 +115,7 @@ class DirectiveFuncDefine : public Directive
 public:
     size_t GetParamSize() const;
 
-    const std::string& GetExpr();
+    const std::string& GetExpr() const;
     const std::string& GetParamName(size_t index);
 
     bool ResolveDefineExpr(std::string Name, const std::vector<std::string>& Params);
@@ -123,9 +126,17 @@ class DirectiveIfStmt : public Directive
     std::string Expr;
 
 public:
-    const std::string& GetExpr();
+    const std::string& GetExpr() const;
 
     bool ResolveIfStmt();
+};
+
+class DirectiveInclude : public Directive
+{
+    std::string Filename;
+    bool        isFileLocal = false;
+
+public:
 };
 
 class DirectivePragma : public Directive
