@@ -13,6 +13,10 @@ namespace Goto
 namespace Language
 {
 
+// ============================================================
+// Lexer Implements Section
+// ============================================================
+
 bool Lexer::lxIsEOF()
 {
     noway_assert(lxCurrIndex > lxSrcFileLen, "Index cannot be larger than source file length!");
@@ -124,7 +128,7 @@ std::string Lexer::lxParseStringBeforeEnd(char endToken)
     return token;
 }
 
-std::string Lexer::lxParseStringBeforeEnd(std::function<bool(char, bool)> endFunc, bool isClosed)
+std::string Lexer::lxParseStringBeforeEnd(bool (*endFunc)(char, bool), bool isClosed)
 {
     std::string token = "";
 
@@ -141,7 +145,41 @@ std::string Lexer::lxParseStringBeforeEnd(std::function<bool(char, bool)> endFun
     return token;
 }
 
-std::string Lexer::lxParseStringBeforeEnd(std::function<bool(char)> endFunc)
+std::string Lexer::lxParseStringBeforeEnd(bool (*endFunc)(char))
+{
+    std::string token = "";
+
+    while (lxIsEOF())
+    {
+        if (endFunc(lxGetCurrChar()))
+        {
+            break;
+        }
+
+        token += lxConsumeAndGetChar();
+    }
+
+    return token;
+}
+
+std::string Lexer::lxParseStringBeforeEnd(std::function<bool(char, bool)>& endFunc, bool isClosed)
+{
+    std::string token = "";
+
+    while (lxIsEOF())
+    {
+        if (endFunc(lxGetCurrChar(), isClosed))
+        {
+            break;
+        }
+
+        token += lxConsumeAndGetChar();
+    }
+
+    return token;
+}
+
+std::string Lexer::lxParseStringBeforeEnd(std::function<bool(char)>& endFunc)
 {
     std::string token = "";
 
@@ -169,7 +207,52 @@ bool Lexer::StartLexSourceCode()
 {
     while (lxIsEOF())
     {
+        if (ttIsSharp(lxGetCurrChar()))
+        {
+            // We should handle preprocessor directives in here
+            // Handle it from LexerDriective
+            Directive* newDirective = ParseDriectiveFrom(this);
+            noway_assert(newDirective->GetFunc() != DirectiveFunc::DF_UNKNOWN,
+                         "Parsed directive function cannot be unknown!");
+            noway_assert(newDirective->GetType() != DirectiveType::DT_UNKNOWN,
+                         "Parsed directive type cannot be unknown!");
 
+            switch (newDirective->GetType())
+            {
+                case DirectiveType::DT_INCLUDE:
+                    // HandleIncludeDirective will modify context. which will tokenlize included file.
+                    HandleIncludeDirective(newDirective, this->lxContext);
+                    break;
+
+                case DirectiveType::DT_DEFINE:
+                    // Handling define will register a lexer level identifier on LexerContext.
+                    // If the function type of directive is not a DF_FUNC_DEFINE its not a function like define.
+                    HandleDefineDirective(newDirective, this->lxContext, newDirective->IsDirectiveOp1());
+                    break;
+
+                case DirectiveType::DT_ELSE:
+                case DirectiveType::DT_ELSE_IF:
+                case DirectiveType::DT_ENDIF:
+                case DirectiveType::DT_IFDEF:
+                case DirectiveType::DT_IFNDEF:
+                    // Handling all kind of conditional directive
+                    HandleConditionalDirective(newDirective, this->lxContext);
+                    break;
+
+                case DirectiveType::DT_ERROR:
+                case DirectiveType::DT_LINE:
+                case DirectiveType::DT_PRAGMA:
+                case DirectiveType::DT_UNDEF:
+                    break;
+
+                case DirectiveType::DT_UNKNOWN:
+                default:
+                    break;
+            }
+
+            // We do not undo change when parsing driective.
+            lxApplyChange();
+        }
     }
 }
 

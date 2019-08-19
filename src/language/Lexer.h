@@ -11,17 +11,29 @@ namespace Basic
 {
 class Engine;
 class FileViewer;
-}
+} // namespace Basic
 
 namespace Language
 {
 class Token;
-class Macro;
+class Directive;
 
 class LexerContext
 {
     std::vector<Token*> lcTokens;
-    std::vector<Macro*> lxMacros;
+
+    std::vector<Directive*> lcPragmas;
+    std::vector<Directive*> lcIfScope;
+
+public:
+    size_t GetTokenCount() const;
+    Token* LookupToken(size_t index);
+
+    void PushIfScope(Directive* directiveIf);
+    void PopIfScope();
+
+    void DefDefineExpr(std::string Key, Directive* directiveDefine);
+    void UndefDefineExpr(std::string Key);
 };
 
 class Lexer
@@ -39,12 +51,14 @@ class Lexer
     size_t lxCurrColumn = 0;
     size_t lxCurrLine   = 0;
 
-protected:
-    bool lxIsEOF();
-    bool lxSkipSpace(bool applyChange = true);
+    bool lxSkipToken = false;
 
     void lxApplyChange();
     void lxUndoChange();
+
+public:
+    bool lxIsEOF();
+    bool lxSkipSpace(bool applyChange = true);
 
     void lxConsumeChar();
     char lxConsumeAndGetChar();
@@ -52,11 +66,16 @@ protected:
     char lxGetPrevChar();
     char lxGetNextChar();
 
+    bool IsSkipTokenEnabled();
+    void StartSkipToken();
+    void StopSkipToken();
+
     std::string lxParseStringBeforeEnd(char endToken);
-    std::string lxParseStringBeforeEnd(std::function<bool(char, bool)> endFunc, bool isClosed);
-    std::string lxParseStringBeforeEnd(std::function<bool(char)> endFunc);
-        
-public:
+    std::string lxParseStringBeforeEnd(bool (*endFunc)(char, bool), bool isClosed);
+    std::string lxParseStringBeforeEnd(bool (*endFunc)(char));
+    std::string lxParseStringBeforeEnd(std::function<bool(char, bool)>& endFunc, bool isClosed);
+    std::string lxParseStringBeforeEnd(std::function<bool(char)>& endFunc);
+
     Lexer() = delete;
     Lexer(Basic::FileViewer* targetFile, LexerContext* context);
 
