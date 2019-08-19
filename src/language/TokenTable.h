@@ -214,8 +214,6 @@ public:
     }
 };
 
-#define ttIsMacroOperandEnd ttIsMacroOperandEndFunc()
-
 inline std::function<bool(char)> ttInverse(std::function<bool(char)> func)
 {
     return [=](char c) { return !func(c); };
@@ -224,6 +222,12 @@ inline std::function<bool(char)> ttInverse(std::function<bool(char)> func)
 inline std::function<bool(char)> ttInverse(char token)
 {
     return [=](char c) { return c != token; };
+}
+
+template <class Ty>
+inline std::function<bool(char)> ttFunc() 
+{
+    return Ty();
 }
 
 // Fast token comparer if its under 16 bytes.
