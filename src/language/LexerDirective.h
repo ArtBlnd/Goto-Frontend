@@ -107,6 +107,32 @@ public:
     const std::string& GetOp2();
 };
 
+class IfExprToken
+{
+};
+
+class IfExprTokenUnknown
+{
+};
+
+class IfExprTokenSymbol
+{
+};
+
+class IfExprTokenIdentifier
+{
+};
+
+class IfExprTokenDefined
+{
+};
+
+class DirectiveIf : public Directive
+{
+
+public:
+};
+
 class DirectiveFuncDefine : public Directive
 {
     std::string              Expr;
@@ -146,6 +172,7 @@ class DirectivePragma : public Directive
 Directive* ParseDriectiveFrom(Lexer* lexer);
 void       HandleIncludeDirective(Directive* directive, LexerContext* lexer);
 void       HandleDefineDirective(Directive* directive, LexerContext* lexer, bool isFuncLike);
+void       HandleConditionalDirective(Directive* directive, LexerContext* lexer);
 
 } // namespace Language
 } // namespace Goto

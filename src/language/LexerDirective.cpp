@@ -182,41 +182,101 @@ DirectiveType TransformKeywordToDrirectiveType(const std::string& keyword)
     return DirectiveType::DT_UNKNOWN;
 }
 
-Directive* ParseDirectiveInclude(Lexer* lexer) {}
+Directive* ParseDirectiveDefine(Lexer* lexer)
+{
+    return nullptr;
+}
+
+Directive* ParseDirectiveInclude(Lexer* lexer)
+{
+    return nullptr;
+}
+
+Directive* ParseDirectiveNoOp(Lexer* lexer, DirectiveType type)
+{
+    noway_assert(type == DirectiveType::DT_ELSE | type == DirectiveType::DT_ENDIF, "Invalid DirectiveNoOp type!");
+    return nullptr;
+}
+
+Directive* ParseDirectiveOp1(Lexer* lexer, DirectiveType type)
+{
+    return nullptr;
+}
+
+Directive* ParseDirectiveOp2(Lexer* lexer, DirectiveType type)
+{
+    return nullptr;
+}
+
+Directive* ParseDirectiveIf(Lexer* lexer, DirectiveType type)
+{
+    return nullptr;
+}
+
+Directive* ParseDirectivePragma(Lexer* lexer, DirectiveType type) 
+{
+    return nullptr;
+}
 
 Directive* ParseDriectiveFrom(Lexer* lexer)
 {
+    Directive* newDirective = nullptr;
+
     noway_assert(ttIsSharp(lexer->lxConsumeAndGetChar()), "directive cannot start without # token!");
     std::string driectiveKeyword = lexer->lxParseStringBeforeEnd(ttInverse(ttIsAlphabet));
 
     DirectiveType type = TransformKeywordToDrirectiveType(driectiveKeyword);
     switch (type)
     {
+        case DirectiveType::DT_DEFINE:
+            newDirective = ParseDirectiveDefine(lexer);
+            break;
+
         case DirectiveType::DT_INCLUDE:
-            return ParseDirectiveInclude(lexer);
+            newDirective = ParseDirectiveInclude(lexer);
+            break;
+
         case DirectiveType::DT_ELSE:
+        case DirectiveType::DT_ENDIF:
+            newDirective = ParseDirectiveNoOp(lexer, type);
+            break;
 
         case DirectiveType::DT_ELSE_IF:
-        case DirectiveType::DT_ENDIF:
+        case DirectiveType::DT_IF:
+            newDirective = ParseDirectiveIf(lexer, type);
+            break;
+
         case DirectiveType::DT_ERROR:
         case DirectiveType::DT_IFDEF:
         case DirectiveType::DT_IFNDEF:
-        case DirectiveType::DT_LINE:
-        case DirectiveType::DT_PRAGMA:
         case DirectiveType::DT_UNDEF:
+            newDirective = ParseDirectiveOp1(lexer, type);
+            break;
+
+        case DirectiveType::DT_LINE:
+            newDirective = ParseDirectiveOp2(lexer, type);
+            break;
+
+        case DirectiveType::DT_PRAGMA:
+            newDirective = ParseDirectivePragma(lexer, type);
+            break;
 
         case DirectiveType::DT_UNKNOWN:
-            return nullptr;
+            break;
 
         default:
             // define keyword will be handled specally.
             noway_assert(false, "Invalid directive type!");
     }
+
+    return newDirective;
 }
 
 void HandleIncludeDirective(Directive* directive, LexerContext* lexer) {}
 
 void HandleDefineDirective(Directive* directive, LexerContext* lexer, bool isFuncLike) {}
+
+void HandleConditionalDirective(Directive* directive, LexerContext* lexer) {}
 
 } // namespace Language
 } // namespace Goto
