@@ -162,21 +162,45 @@ bool DirectiveIfStmt::ResolveIfStmt()
 
 DirectiveType TransformKeywordToDrirectiveType(const std::string& keyword)
 {
-    if (keyword == "include")
-    {
-        return DirectiveType::DT_INCLUDE;
-    }
-    else if (keyword == "define")
+    if (keyword == "define")
     {
         return DirectiveType::DT_DEFINE;
+    }
+    else if (keyword == "error")
+    {
+        return DirectiveType::DT_ERROR;
+    }
+    else if (keyword == "undef")
+    {
+        return DirectiveType::DT_UNDEF;
+    }
+    else if (keyword == "elif")
+    {
+        return DirectiveType::DT_ELSE_IF;
+    }
+    else if (keyword == "if")
+    {
+        return DirectiveType::DT_IF;
+    }
+    else if (keyword == "include")
+    {
+        return DirectiveType::DT_INCLUDE;
     }
     else if (keyword == "else")
     {
         return DirectiveType::DT_ELSE;
     }
-    else if (keyword == "elif")
+    else if (keyword == "ifdef")
     {
-        return DirectiveType::DT_ELSE_IF;
+        return DirectiveType::DT_IFDEF;
+    }
+    else if (keyword == "ifndef")
+    {
+        return DirectiveType::DT_IFNDEF;
+    }
+    else if (keyword == "pragma")
+    {
+        return DirectiveType::DT_PRAGMA;
     }
 
     return DirectiveType::DT_UNKNOWN;
@@ -195,12 +219,46 @@ Directive* ParseDirectiveInclude(Lexer* lexer)
 Directive* ParseDirectiveNoOp(Lexer* lexer, DirectiveType type)
 {
     noway_assert(type == DirectiveType::DT_ELSE | type == DirectiveType::DT_ENDIF, "Invalid DirectiveNoOp type!");
-    return nullptr;
+
+    // Else, Endif Directives
+    //
+    // #else line-end
+    // #endif line-end
+    return lexer->GetLexerContext()->AllocDirectiveNoOp(type);
 }
 
 Directive* ParseDirectiveOp1(Lexer* lexer, DirectiveType type)
 {
-    return nullptr;
+    LexerContext* lexerContext = lexer->GetLexerContext();
+
+    // Skipping space that exists between directive type token and first operand.
+    lexer->lxSkipSpace(true);
+    noway_assert(!ttIsSpace(lexer->lxGetCurrChar()), "Starting charactor of first operands cannot be space!");
+
+    // Error Directive
+    //
+    // #error token-string line-end
+    // We have to parse it before its end-line
+    if (type == DirectiveType::DT_ERROR)
+    {
+        std::string ErrorStr = lexer->lxParseStringBeforeEnd(ttIsNextLine);
+        return lexerContext->AllocDirectiveOp1(type, ErrorStr);
+    }
+
+    // Undef, Ifdef, Ifndef Directives
+    //
+    // #undef identifier line-end
+    // #ifdef identifier line-end
+    // #ifndef identifier line-end
+    std::string Op1 = lexer->lxParseStringBeforeEnd([](char c) {
+        if (ttIsSpace(c) | ttIsNextLine(c))
+        {
+            return true;
+        }
+        return false;
+    });
+
+    return lexerContext->AllocDirectiveOp1(type, Op1);
 }
 
 Directive* ParseDirectiveOp2(Lexer* lexer, DirectiveType type)
@@ -213,7 +271,7 @@ Directive* ParseDirectiveIf(Lexer* lexer, DirectiveType type)
     return nullptr;
 }
 
-Directive* ParseDirectivePragma(Lexer* lexer, DirectiveType type) 
+Directive* ParseDirectivePragma(Lexer* lexer, DirectiveType type)
 {
     return nullptr;
 }

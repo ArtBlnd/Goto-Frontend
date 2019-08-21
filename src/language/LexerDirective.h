@@ -36,6 +36,7 @@ enum class DirectiveFunc
     DF_OP2         = 0x03,
     DF_FUNC_DEFINE = 0x04,
     DF_PRAGMA      = 0x05,
+    DT_IF          = 0x06,
 
     DF_UNKNOWN = 0xFF
 };
