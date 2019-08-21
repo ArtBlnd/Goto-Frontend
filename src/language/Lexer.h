@@ -34,6 +34,13 @@ public:
 
     void DefDefineExpr(std::string Key, Directive* directiveDefine);
     void UndefDefineExpr(std::string Key);
+
+    Directive* AllocDirectiveNoOp(DirectiveType type);
+    Directive* AllocDirectiveOp1(DirectiveType type, std::string Op1);
+    Directive* AllocDirectiveOp2(DirectiveType type, std::string Op1, std::string Op2);
+    Directive* AllocDirectiveFuncDefine();
+    Directive* AllocDirectivePragma();
+    Directive* AllocDirectiveIf();
 };
 
 class Lexer
@@ -57,6 +64,8 @@ class Lexer
     void lxUndoChange();
 
 public:
+    LexerContext* GetLexerContext();
+
     bool lxIsEOF();
     bool lxSkipSpace(bool applyChange = true);
 
