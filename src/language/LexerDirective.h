@@ -37,6 +37,7 @@ enum class DirectiveFunc
     DF_FUNC_DEFINE = 0x04,
     DF_PRAGMA      = 0x05,
     DT_IF          = 0x06,
+    DT_INCLUDE     = 0x07,
 
     DF_UNKNOWN = 0xFF
 };
@@ -168,6 +169,19 @@ public:
 
 class DirectivePragma : public Directive
 {
+};
+
+class DirectiveInclude : public Directive
+{
+    std::string includePath;
+    bool        isLocal;
+
+public:
+    DirectiveInclude() = delete;
+    DirectiveInclude(std::string path, bool isLocal);
+
+    bool IsLocalPath() const;
+    const std::string& GetFilePath() const;
 };
 
 Directive* ParseDriectiveFrom(Lexer* lexer);

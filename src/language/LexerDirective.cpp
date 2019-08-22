@@ -157,6 +157,27 @@ bool DirectiveIfStmt::ResolveIfStmt()
 }
 
 // ============================================================
+// DirevtiveInclude Implements Section
+// ============================================================
+
+DirectiveInclude::DirectiveInclude(std::string path, bool isLocalPath)
+    : includePath(std::move(path))
+    , isLocal(isLocalPath)
+    , Directive(DirectiveType::DT_INCLUDE, DirectiveFunc::DT_INCLUDE)
+{
+}
+
+bool DirectiveInclude::IsLocalPath() const
+{
+    return isLocal;
+}
+
+const std::string& DirectiveInclude::GetFilePath() const
+{
+    return includePath;
+}
+
+// ============================================================
 // Direvtive Handling Section
 // ============================================================
 
@@ -206,6 +227,16 @@ DirectiveType TransformKeywordToDrirectiveType(const std::string& keyword)
     return DirectiveType::DT_UNKNOWN;
 }
 
+bool IsSpaceOrNextLine(char c)
+{
+    if (ttIsSpace(c) | ttIsNextLine(c))
+    {
+        return true;
+    }
+
+    return false;
+}
+
 Directive* ParseDirectiveDefine(Lexer* lexer)
 {
     return nullptr;
@@ -213,7 +244,33 @@ Directive* ParseDirectiveDefine(Lexer* lexer)
 
 Directive* ParseDirectiveInclude(Lexer* lexer)
 {
-    return nullptr;
+    LexerContext* lexerContext = lexer->GetLexerContext();
+
+    // Skipping space that exists between < or " token.
+    lexer->lxSkipSpace();
+
+    // Initalize it before changing value because the start of includePath symbol can be invalid.
+    std::string includePath = "";
+    bool        isLocalPath = false;
+    
+    // Include Directive.
+    if (ttIsLessThanSym(lexer->lxGetCurrChar()))
+    {
+        // #include <`includePath`> 
+        lexer->lxConsumeChar();
+
+        includePath = lexer->lxParseStringBeforeEnd(ttIsGreaterThanSym);
+    }
+    else if (ttIsDoubleQuote(lexer->lxGetCurrChar()))
+    {
+        // #include "`includePath`"
+        lexer->lxConsumeChar();
+
+        isLocalPath = true;
+        includePath = lexer->lxParseStringBeforeEnd(ttIsDoubleQuote);
+    }
+
+    return lexerContext->AllocDirectiveInclude(includePath, isLocalPath);
 }
 
 Directive* ParseDirectiveNoOp(Lexer* lexer, DirectiveType type)
@@ -232,7 +289,7 @@ Directive* ParseDirectiveOp1(Lexer* lexer, DirectiveType type)
     LexerContext* lexerContext = lexer->GetLexerContext();
 
     // Skipping space that exists between directive type token and first operand.
-    lexer->lxSkipSpace(true);
+    lexer->lxSkipSpace();
     noway_assert(!ttIsSpace(lexer->lxGetCurrChar()), "Starting charactor of first operands cannot be space!");
 
     // Error Directive
@@ -250,14 +307,7 @@ Directive* ParseDirectiveOp1(Lexer* lexer, DirectiveType type)
     // #undef identifier line-end
     // #ifdef identifier line-end
     // #ifndef identifier line-end
-    std::string Op1 = lexer->lxParseStringBeforeEnd([](char c) {
-        if (ttIsSpace(c) | ttIsNextLine(c))
-        {
-            return true;
-        }
-        return false;
-    });
-
+    std::string Op1 = lexer->lxParseStringBeforeEnd(IsSpaceOrNextLine);
     return lexerContext->AllocDirectiveOp1(type, Op1);
 }
 
@@ -281,9 +331,15 @@ Directive* ParseDriectiveFrom(Lexer* lexer)
     Directive* newDirective = nullptr;
 
     noway_assert(ttIsSharp(lexer->lxConsumeAndGetChar()), "directive cannot start without # token!");
-    std::string driectiveKeyword = lexer->lxParseStringBeforeEnd(ttInverse(ttIsAlphabet));
+    std::string directiveKeyword = lexer->lxParseStringBeforeEnd(ttInverse(ttIsAlphabet));
 
-    DirectiveType type = TransformKeywordToDrirectiveType(driectiveKeyword);
+    if (directiveKeyword.empty())
+    {
+        // Seems its Null directive.
+        return nullptr;
+    }
+
+    DirectiveType type = TransformKeywordToDrirectiveType(directiveKeyword);
     switch (type)
     {
         case DirectiveType::DT_DEFINE:
