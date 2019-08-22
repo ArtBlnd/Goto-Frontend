@@ -159,14 +159,6 @@ public:
     bool ResolveIfStmt();
 };
 
-class DirectiveInclude : public Directive
-{
-    std::string Filename;
-    bool        isFileLocal = false;
-
-public:
-};
-
 class DirectivePragma : public Directive
 {
 };
