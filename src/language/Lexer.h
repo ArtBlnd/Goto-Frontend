@@ -41,6 +41,7 @@ public:
     Directive* AllocDirectiveFuncDefine();
     Directive* AllocDirectivePragma();
     Directive* AllocDirectiveIf();
+    Directive* AllocDirectiveInclude(std::string includePath, bool isLocal);
 };
 
 class Lexer
@@ -63,11 +64,13 @@ class Lexer
     void lxApplyChange();
     void lxUndoChange();
 
+    bool lxSkipSpace(bool applyChange);
+
 public:
     LexerContext* GetLexerContext();
 
     bool lxIsEOF();
-    bool lxSkipSpace(bool applyChange = true);
+    bool lxSkipSpace();
 
     void lxConsumeChar();
     char lxConsumeAndGetChar();
