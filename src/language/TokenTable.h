@@ -188,32 +188,6 @@ bool ttIsBoolean(const std::string& str);
 // Type : 'a > | z <' (ALPHABET)
 bool ttIsAlphabet(const char c);
 
-class ttIsMacroOperandEndFunc
-{
-    bool isBackslashFound = false;
-
-public:
-    bool operator()(char c)
-    {
-        if (ttIsBackSlash(c))
-        {
-            isBackslashFound = true;
-        }
-        if (ttIsNextLine(c))
-        {
-            if (isBackslashFound)
-            {
-                isBackslashFound = false;
-            }
-            else
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-};
-
 inline std::function<bool(char)> ttInverse(std::function<bool(char)> func)
 {
     return [=](char c) { return !func(c); };
