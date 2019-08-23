@@ -162,7 +162,7 @@ std::string Lexer::lxParseStringBeforeEnd(bool (*endFunc)(char))
     return token;
 }
 
-std::string Lexer::lxParseStringBeforeEnd(std::function<bool(char, bool)>& endFunc, bool isClosed)
+std::string Lexer::lxParseStringBeforeEnd(const std::function<bool(char, bool)>& endFunc, bool isClosed)
 {
     std::string token = "";
 
@@ -179,7 +179,7 @@ std::string Lexer::lxParseStringBeforeEnd(std::function<bool(char, bool)>& endFu
     return token;
 }
 
-std::string Lexer::lxParseStringBeforeEnd(std::function<bool(char)>& endFunc)
+std::string Lexer::lxParseStringBeforeEnd(const std::function<bool(char)>& endFunc)
 {
     std::string token = "";
 

@@ -85,8 +85,8 @@ public:
     std::string lxParseStringBeforeEnd(char endToken);
     std::string lxParseStringBeforeEnd(bool (*endFunc)(char, bool), bool isClosed);
     std::string lxParseStringBeforeEnd(bool (*endFunc)(char));
-    std::string lxParseStringBeforeEnd(std::function<bool(char, bool)>& endFunc, bool isClosed);
-    std::string lxParseStringBeforeEnd(std::function<bool(char)>& endFunc);
+    std::string lxParseStringBeforeEnd(const std::function<bool(char, bool)>& endFunc, bool isClosed);
+    std::string lxParseStringBeforeEnd(const std::function<bool(char)>& endFunc);
 
     Lexer() = delete;
     Lexer(Basic::FileViewer* targetFile, LexerContext* context);
