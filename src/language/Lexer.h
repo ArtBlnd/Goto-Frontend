@@ -38,7 +38,7 @@ public:
     Directive* AllocDirectiveNoOp(DirectiveType type);
     Directive* AllocDirectiveOp1(DirectiveType type, std::string Op1);
     Directive* AllocDirectiveOp2(DirectiveType type, std::string Op1, std::string Op2);
-    Directive* AllocDirectiveFuncDefine();
+    Directive* AllocDirectiveFuncDefine(std::string DefineIdent, std::vector<std::string> ParamIdent, std::string Expr);;
     Directive* AllocDirectivePragma();
     Directive* AllocDirectiveIf();
     Directive* AllocDirectiveInclude(std::string includePath, bool isLocal);

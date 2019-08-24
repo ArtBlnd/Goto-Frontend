@@ -239,6 +239,55 @@ bool IsSpaceOrNextLine(char c)
 
 Directive* ParseDirectiveDefine(Lexer* lexer)
 {
+    LexerContext* lexerContext = lexer->GetLexerContext();
+
+    // Skipping space that exists between keyword and identifier.
+    lexer->lxSkipSpace();
+
+    std::string defineIdent = lexer->lxParseStringBeforeEnd(ttInverse(ttIsAlphabet));
+    if (ttIsParen(lexer->lxGetCurrChar(), false))
+    {
+        // #define `Identifier`(Params1, ...) `Identifiers...`
+        auto SperatorFunc = [](char c) { return ttIsSpace(c) | ttIsComma(c); };
+
+        std::vector<std::string> ParamIdent;
+        std::string              Expr;
+
+        while (lexer->lxIsEOF())
+        {
+            lexer->lxSkipSpace();
+            ParamIdent.emplace_back(lexer->lxParseStringBeforeEnd(SperatorFunc));
+
+            lexer->lxSkipSpace();
+            if (ttIsParen(lexer->lxGetCurrChar(), true))
+            {
+                lexer->lxConsumeChar();
+                break;
+            }
+
+            if (ttIsComma(lexer->lxGetCurrChar()))
+            {
+                lexer->lxConsumeChar();
+                continue;
+            }
+
+            // unknown charactor has been detected.
+        }
+
+        lexer->lxSkipSpace();
+        Expr = lexer->lxParseStringBeforeEnd(ttIsNextLine);
+
+        return lexerContext->AllocDirectiveFuncDefine(std::move(defineIdent), std::move(ParamIdent), std::move(Expr));
+    }
+    else
+    {
+        // #define 'Identifier' `Identifiers....`
+        lexer->lxSkipSpace();
+        std::string Expr = lexer->lxParseStringBeforeEnd(ttIsNextLine);
+
+        return lexerContext->AllocDirectiveOp2(DirectiveType::DT_DEFINE, defineIdent, Expr);
+    }
+
     return nullptr;
 }
 
@@ -252,11 +301,11 @@ Directive* ParseDirectiveInclude(Lexer* lexer)
     // Initalize it before changing value because the start of includePath symbol can be invalid.
     std::string includePath = "";
     bool        isLocalPath = false;
-    
+
     // Include Directive.
     if (ttIsLessThanSym(lexer->lxGetCurrChar()))
     {
-        // #include <`includePath`> 
+        // #include <`includePath`>
         lexer->lxConsumeChar();
 
         includePath = lexer->lxParseStringBeforeEnd(ttIsGreaterThanSym);
@@ -321,7 +370,7 @@ Directive* ParseDirectiveIf(Lexer* lexer, DirectiveType type)
     return nullptr;
 }
 
-Directive* ParseDirectivePragma(Lexer* lexer, DirectiveType type)
+Directive* ParseDirectivePragma(Lexer* lexer)
 {
     return nullptr;
 }
@@ -372,7 +421,7 @@ Directive* ParseDriectiveFrom(Lexer* lexer)
             break;
 
         case DirectiveType::DT_PRAGMA:
-            newDirective = ParseDirectivePragma(lexer, type);
+            newDirective = ParseDirectivePragma(lexer);
             break;
 
         case DirectiveType::DT_UNKNOWN:
