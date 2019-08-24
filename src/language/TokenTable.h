@@ -182,6 +182,9 @@ inline bool    ttIsSharp(const char c)
 // Type : '1|2|3|4|5|6|7|8|9|0' (INTERGERS)
 bool ttIsInteger(const std::string& str);
 
+// Type : '1|2|3|4|5|6|7|8|9|0' (INTERGERS)
+bool ttIsInteger(const char c);
+
 // Type : 'true|false|0|1' (BOOLEANDS)
 bool ttIsBoolean(const std::string& str);
 
@@ -203,6 +206,12 @@ inline std::function<bool(char)> ttFunc()
 {
     return Ty();
 }
+
+using TTFuncTyA = bool(char);
+using TTFuncA = std::function<TTFuncTyA>;
+
+using TTFuncTyB = bool(char, bool);
+using TTFuncB = std::function<TTFuncTyB>;
 
 // Fast token comparer if its under 16 bytes.
 // this use normalization which is change 16 byte char array into integer and compare.

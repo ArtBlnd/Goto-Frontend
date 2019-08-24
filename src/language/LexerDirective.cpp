@@ -248,7 +248,7 @@ Directive* ParseDirectiveDefine(Lexer* lexer)
     if (ttIsParen(lexer->lxGetCurrChar(), false))
     {
         // #define `Identifier`(Params1, ...) `Identifiers...`
-        auto SperatorFunc = [](char c) { return ttIsSpace(c) | ttIsComma(c); };
+        TTFuncA SperatorFunc = [](char c) { return ttIsAlphabet(c) | ttIsInteger(c); };
 
         std::vector<std::string> ParamIdent;
         std::string              Expr;
@@ -256,24 +256,41 @@ Directive* ParseDirectiveDefine(Lexer* lexer)
         while (lexer->lxIsEOF())
         {
             lexer->lxSkipSpace();
-            ParamIdent.emplace_back(lexer->lxParseStringBeforeEnd(SperatorFunc));
 
-            lexer->lxSkipSpace();
-            if (ttIsParen(lexer->lxGetCurrChar(), true))
+            std::string Param = lexer->lxParseStringBeforeEnd(SperatorFunc);
+            if (Param.empty())
             {
-                lexer->lxConsumeChar();
-                break;
+                // Emit warning.
             }
 
+            ParamIdent.emplace_back(Param);
+
+            // Skip spaces if end of identifier is space
+            // for example. like (Ident1    ,Ident...) or (Ident1   )
+            if (ttIsSpace(lexer->lxGetCurrChar()))
+            {
+                lexer->lxSkipSpace();
+            }
+
+            // Check that it has next param Identifier
+            // If comma exists next to param identifier. it menas it has next identifier.
             if (ttIsComma(lexer->lxGetCurrChar()))
             {
                 lexer->lxConsumeChar();
                 continue;
             }
 
+            // End of function like macro definition
+            if (ttIsParen(lexer->lxGetCurrChar(), true))
+            {
+                lexer->lxConsumeChar();
+                break;
+            }
+
             // unknown charactor has been detected.
         }
 
+        // Parse expression.
         lexer->lxSkipSpace();
         Expr = lexer->lxParseStringBeforeEnd(ttIsNextLine);
 
