@@ -36,8 +36,8 @@ enum class DirectiveFunc
     DF_OP2         = 0x03,
     DF_FUNC_DEFINE = 0x04,
     DF_PRAGMA      = 0x05,
-    DT_IF          = 0x06,
-    DT_INCLUDE     = 0x07,
+    DF_IF          = 0x06,
+    DF_INCLUDE     = 0x07,
 
     DF_UNKNOWN = 0xFF
 };
@@ -47,6 +47,8 @@ class DirectiveOp1;
 class DirectiveOp2;
 class DirectiveFuncDefine;
 class DirectivePragma;
+class DirectiveIf;
+class DirectiveInclude;
 class Directive
 {
     size_t dtId = (size_t)(-1);
@@ -78,6 +80,12 @@ public:
 
     DirectivePragma* AsDirectivePragma();
     bool             IsDirectivePragma() const;
+
+    DirectiveIf* AsDirectiveIf();
+    bool         IsDirectiveIf() const;
+
+    DirectiveInclude* AsDirectiveInclude();
+    bool              IsDirectiveInclude() const;
 
     // This is used for check that directive is same directive when its caching.
     // The id should same when recording resolved expression on directive cache

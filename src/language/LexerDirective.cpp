@@ -76,12 +76,34 @@ bool Directive::IsDirectiveFuncDefine() const
 DirectivePragma* Directive::AsDirectivePragma()
 {
     noway_assert(IsDirectivePragma(), "Cannot cast to DirectivePragma!");
-    return nullptr;
+    return (DirectivePragma*)(this);
 }
 
 bool Directive::IsDirectivePragma() const
 {
     return (GetFunc() == DirectiveFunc::DF_PRAGMA);
+}
+
+DirectiveIf* Directive::AsDirectiveIf()
+{
+    noway_assert(IsDirectiveIf(), "Cannot cast to DirectiveIf");
+    return (DirectiveIf*)(this);
+}
+
+bool Directive::IsDirectiveIf() const
+{
+    return (GetFunc() == DirectiveFunc::DF_IF);
+}
+
+DirectiveInclude* Directive::AsDirectiveInclude()
+{
+    noway_assert(IsDirectiveInclude(), "Cannot cast to DirectiveInclude");
+    return (DirectiveInclude*)(this);
+}
+
+bool Directive::IsDirectiveInclude() const
+{
+    return (GetFunc() == DirectiveFunc::DF_IF);
 }
 
 size_t Directive::GetID() const
@@ -163,7 +185,7 @@ bool DirectiveIfStmt::ResolveIfStmt()
 DirectiveInclude::DirectiveInclude(std::string path, bool isLocalPath)
     : includePath(std::move(path))
     , isLocal(isLocalPath)
-    , Directive(DirectiveType::DT_INCLUDE, DirectiveFunc::DT_INCLUDE)
+    , Directive(DirectiveType::DT_INCLUDE, DirectiveFunc::DF_INCLUDE)
 {
 }
 
