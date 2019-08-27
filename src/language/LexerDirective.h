@@ -104,6 +104,9 @@ class DirectiveOp1 : public Directive
     std::string Op1;
 
 public:
+    DirectiveOp1() = delete;
+    DirectiveOp1(DirectiveType type, std::string op1);
+
     const std::string& GetOp1();
 };
 
@@ -113,34 +116,22 @@ class DirectiveOp2 : public Directive
     std::string Op2;
 
 public:
+    DirectiveOp2() = delete;
+    DirectiveOp2(DirectiveType type, std::string op1, std::string op2);
+
     const std::string& GetOp1();
     const std::string& GetOp2();
 };
 
-class IfExprToken
-{
-};
-
-class IfExprTokenUnknown
-{
-};
-
-class IfExprTokenSymbol
-{
-};
-
-class IfExprTokenIdentifier
-{
-};
-
-class IfExprTokenDefined
-{
-};
-
 class DirectiveIf : public Directive
 {
+    bool isTrue = false;
 
 public:
+    DirectiveIf() = delete;
+    DirectiveIf(DirectiveType type, bool isExprTrue);
+
+    bool IsExprTrue() const;
 };
 
 class DirectiveFuncDefine : public Directive
@@ -149,22 +140,15 @@ class DirectiveFuncDefine : public Directive
     std::vector<std::string> Params;
 
 public:
+    DirectiveFuncDefine() = delete;
+    DirectiveFuncDefine(std::string Expression, std::vector<std::string> Parameters);
+
     size_t GetParamSize() const;
 
     const std::string& GetExpr() const;
     const std::string& GetParamName(size_t index);
 
     bool ResolveDefineExpr(std::string Name, const std::vector<std::string>& Params);
-};
-
-class DirectiveIfStmt : public Directive
-{
-    std::string Expr;
-
-public:
-    const std::string& GetExpr() const;
-
-    bool ResolveIfStmt();
 };
 
 class DirectivePragma : public Directive

@@ -1,5 +1,6 @@
 #include <Basic/Debug.h>
 #include <Language/LexerDirective.h>
+#include <Language/LexerDirectiveIf.h>
 #include <Language/Lexer.h>
 #include <Language/TokenTable.h>
 
@@ -165,20 +166,6 @@ bool DirectiveFuncDefine::ResolveDefineExpr(std::string Name, const std::vector<
 }
 
 // ============================================================
-// DirevtiveIfStmt Implements Section
-// ============================================================
-
-const std::string& DirectiveIfStmt::GetExpr() const
-{
-    return Expr;
-}
-
-bool DirectiveIfStmt::ResolveIfStmt()
-{
-    return false;
-}
-
-// ============================================================
 // DirevtiveInclude Implements Section
 // ============================================================
 
@@ -270,7 +257,7 @@ Directive* ParseDirectiveDefine(Lexer* lexer)
     if (ttIsParen(lexer->lxGetCurrChar(), false))
     {
         // #define `Identifier`(Params1, ...) `Identifiers...`
-        TTFuncA SperatorFunc = [](char c) { return ttIsAlphabet(c) | ttIsInteger(c); };
+        TTFuncA SperatorFunc = [](char c) { return ttIsSpace(c) | ttIsComma(c) | ttIsParen(c, true); };
 
         std::vector<std::string> ParamIdent;
         std::string              Expr;
@@ -348,6 +335,7 @@ Directive* ParseDirectiveInclude(Lexer* lexer)
         lexer->lxConsumeChar();
 
         includePath = lexer->lxParseStringBeforeEnd(ttIsGreaterThanSym);
+        lexer->lxConsumeChar(); // Consume > charactor.
     }
     else if (ttIsDoubleQuote(lexer->lxGetCurrChar()))
     {
@@ -356,6 +344,7 @@ Directive* ParseDirectiveInclude(Lexer* lexer)
 
         isLocalPath = true;
         includePath = lexer->lxParseStringBeforeEnd(ttIsDoubleQuote);
+        lexer->lxConsumeChar(); // Consume " charactor.
     }
 
     return lexerContext->AllocDirectiveInclude(includePath, isLocalPath);
@@ -406,7 +395,10 @@ Directive* ParseDirectiveOp2(Lexer* lexer, DirectiveType type)
 
 Directive* ParseDirectiveIf(Lexer* lexer, DirectiveType type)
 {
-    return nullptr;
+    LexerContext* lexerContext = lexer->GetLexerContext();
+
+    lexer->lxSkipSpace();
+    return lexerContext->AllocDirectiveIf(EvaluateIfExpr(lexer) > 0);
 }
 
 Directive* ParseDirectivePragma(Lexer* lexer)
@@ -479,6 +471,8 @@ void HandleIncludeDirective(Directive* directive, LexerContext* lexer) {}
 void HandleDefineDirective(Directive* directive, LexerContext* lexer, bool isFuncLike) {}
 
 void HandleConditionalDirective(Directive* directive, LexerContext* lexer) {}
+
+
 
 } // namespace Language
 } // namespace Goto
