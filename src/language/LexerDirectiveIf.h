@@ -12,21 +12,38 @@ class Lexer;
 
 class IfExpr
 {
+public:
+    virtual uint64_t Evaluate(Lexer* lexer) = 0;
 };
 
-class IfExprIdentifier
+class IfExprIdentifier : public IfExpr
+{
+    const std::string Identifier;
+
+public:
+    IfExprIdentifier() = delete;
+    IfExprIdentifier(std::string identifier);
+
+    uint64_t Evaluate(Lexer* lexer) override;
+};
+
+enum class UnaryOpType
 {
 };
 
-class IfExprUnaryOp
+class IfExprUnaryOp : public IfExpr
 {
 };
 
-class IfExprBinaryOp
+class IfExprBinaryOp : public IfExpr
 {
 };
 
-class IfExprScope
+class IfExprConstant : public IfExpr
+{
+};
+
+class IfExprScope : public IfExpr
 {
 };
 
