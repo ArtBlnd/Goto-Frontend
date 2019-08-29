@@ -2,9 +2,15 @@
 #include <Language/Lexer.h>
 #include <Language/Transform.h>
 
-Goto::Language::IfExprIdentifier::IfExprIdentifier(std::string identifier) : Identifier(identifier) {}
+#include <Basic/Debug.h>
 
-uint64_t Goto::Language::IfExprIdentifier::Evaluate(Lexer* lexer)
+namespace Goto
+{
+namespace Language
+{
+IfExprIdentifier::IfExprIdentifier(std::string identifier) : Identifier(identifier) {}
+
+uint64_t IfExprIdentifier::Evaluate(Lexer* lexer)
 {
     LexerContext* lexerContext = lexer->GetLexerContext();
 
@@ -26,7 +32,60 @@ uint64_t Goto::Language::IfExprIdentifier::Evaluate(Lexer* lexer)
     return 0;
 }
 
-uint64_t Goto::Language::EvaluateIfExpr(Lexer* lexer)
+const std::string IfExprIdentifier::GetIdentifier() const
+{
+    return Identifier;
+}
+
+IfExprUnaryOp::IfExprUnaryOp(UnaryOpType type, IfExpr* expr) : uoType(type), uoExpr(expr) {}
+
+uint64_t IfExprUnaryOp::Evaluate(Lexer* lexer)
+{
+    if (uoType == UnaryOpType::DEFINED_OP)
+    {
+        IfExprIdentifier* identifier = dynamic_cast<IfExprIdentifier*>(uoExpr);
+        noway_assert(identifier != nullptr, "Operand of defiend operator should be identifier!");
+
+        return lexer->GetLexerContext()->LookupDefineTable(identifier->GetIdentifier()) != nullptr;
+    }
+
+    switch (uoType)
+    {
+        case UnaryOpType::PLUS_OP:
+            // + operator
+            return +uoExpr->Evaluate(lexer);
+
+        case UnaryOpType::INCREASE_OP:
+            // ++ operator
+            return uoExpr->Evaluate(lexer) + 1;
+
+        case UnaryOpType::MINUS_OP:
+            // - operator
+            return -uoExpr->Evaluate(lexer);
+
+        case UnaryOpType::DECREASE_OP:
+            // -- operator
+            return uoExpr->Evaluate(lexer) - 1;
+
+        case UnaryOpType::LOGICAL_NOT_OP:
+            // ! operator
+            return !uoExpr->Evaluate(lexer);
+
+        case UnaryOpType::BITWISE_NOT_OP:
+            // ~ operator.
+            return ~uoExpr->Evaluate(lexer);
+
+        default:
+            break;
+    }
+
+    noway_assert(true, "Unknown UnaryOpType!");
+}
+
+uint64_t EvaluateIfExpr(Lexer* lexer)
 {
     return 0;
 }
+
+} // namespace Language
+} // namespace Goto
