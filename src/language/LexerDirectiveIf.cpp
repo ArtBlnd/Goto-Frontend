@@ -55,17 +55,9 @@ uint64_t IfExprUnaryOp::Evaluate(Lexer* lexer)
             // + operator
             return +uoExpr->Evaluate(lexer);
 
-        case UnaryOpType::INCREASE_OP:
-            // ++ operator
-            return uoExpr->Evaluate(lexer) + 1;
-
         case UnaryOpType::MINUS_OP:
             // - operator
             return -uoExpr->Evaluate(lexer);
-
-        case UnaryOpType::DECREASE_OP:
-            // -- operator
-            return uoExpr->Evaluate(lexer) - 1;
 
         case UnaryOpType::LOGICAL_NOT_OP:
             // ! operator

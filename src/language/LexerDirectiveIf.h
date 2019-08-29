@@ -32,12 +32,10 @@ public:
 enum class UnaryOpType
 {
     PLUS_OP        = 0x01, // +
-    INCREASE_OP    = 0x02, // ++
-    MINUS_OP       = 0x03, // -
-    DECREASE_OP    = 0x04, // --
-    DEFINED_OP     = 0x05, // defined(Expr)
-    LOGICAL_NOT_OP = 0x06, // !
-    BITWISE_NOT_OP = 0x07, // ~
+    MINUS_OP       = 0x02, // -
+    DEFINED_OP     = 0x03, // defined(Expr)
+    LOGICAL_NOT_OP = 0x04, // !
+    BITWISE_NOT_OP = 0x05, // ~
 };
 
 class IfExprUnaryOp : public IfExpr
