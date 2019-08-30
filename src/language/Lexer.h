@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+#include <Language/LexerDirective.h>
+
 namespace Goto
 {
 namespace Basic
@@ -29,18 +31,19 @@ public:
     size_t GetTokenCount() const;
     Token* LookupToken(size_t index);
 
-    void PushIfScope(Directive* directiveIf);
-    void PopIfScope();
+    void DirectiveIfPush(Directive* directiveIf);
+    void DirectiveIfPop();
 
     void DefDefineExpr(std::string Key, Directive* directiveDefine);
     void UndefDefineExpr(std::string Key);
+    Directive* LookupDefineTable(std::string Key);
 
     Directive* AllocDirectiveNoOp(DirectiveType type);
     Directive* AllocDirectiveOp1(DirectiveType type, std::string Op1);
     Directive* AllocDirectiveOp2(DirectiveType type, std::string Op1, std::string Op2);
     Directive* AllocDirectiveFuncDefine(std::string DefineIdent, std::vector<std::string> ParamIdent, std::string Expr);;
     Directive* AllocDirectivePragma();
-    Directive* AllocDirectiveIf();
+    Directive* AllocDirectiveIf(bool isExprTrue);
     Directive* AllocDirectiveInclude(std::string includePath, bool isLocal);
 };
 

@@ -14,8 +14,37 @@ namespace Language
 {
 
 // ============================================================
+// LexerContext Implements Section
+// ============================================================
+
+size_t LexerContext::GetTokenCount() const
+{
+    return lcTokens.size();
+}
+
+Token* LexerContext::LookupToken(size_t index)
+{
+    return lcTokens[index];
+}
+
+void LexerContext::DirectiveIfPush(Directive* directiveIf)
+{
+    lcIfScope.emplace_back(directiveIf);
+}
+
+void LexerContext::DirectiveIfPop()
+{
+    lcIfScope.pop_back();
+}
+
+// ============================================================
 // Lexer Implements Section
 // ============================================================
+
+LexerContext* Lexer::GetLexerContext()
+{
+    return lxContext;
+}
 
 bool Lexer::lxIsEOF()
 {
@@ -44,6 +73,11 @@ bool Lexer::lxSkipSpace(bool applyChange)
     }
 
     return true;
+}
+
+bool Lexer::lxSkipSpace()
+{
+    return lxSkipSpace(false);
 }
 
 void Lexer::lxApplyChange()
