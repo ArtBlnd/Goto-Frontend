@@ -136,6 +136,7 @@ public:
 
 class DirectiveFuncDefine : public Directive
 {
+    std::string              Name;
     std::string              Expr;
     std::vector<std::string> Params;
 
@@ -145,6 +146,7 @@ public:
 
     size_t GetParamSize() const;
 
+    const std::string& GetName() const;
     const std::string& GetExpr() const;
     const std::string& GetParamName(size_t index);
 
@@ -164,7 +166,7 @@ public:
     DirectiveInclude() = delete;
     DirectiveInclude(std::string path, bool isLocal);
 
-    bool IsLocalPath() const;
+    bool               IsLocalPath() const;
     const std::string& GetFilePath() const;
 };
 

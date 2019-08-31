@@ -1,4 +1,6 @@
 #include <Basic/Debug.h>
+#include <Basic/FileUtils.h>
+
 #include <Language/LexerDirective.h>
 #include <Language/LexerDirectiveIf.h>
 #include <Language/Lexer.h>
@@ -398,7 +400,10 @@ Directive* ParseDirectiveIf(Lexer* lexer, DirectiveType type)
     LexerContext* lexerContext = lexer->GetLexerContext();
 
     lexer->lxSkipSpace();
-    return lexerContext->AllocDirectiveIf(EvaluateIfExpr(lexer) > 0);
+    std::string Expr = lexer->lxParseStringBeforeEnd(ttIsNextLine);
+    lexer->lxSkipSpace();
+
+    return lexerContext->AllocDirectiveIf(EvaluateIfExpr(lexer, Expr) > 0);
 }
 
 Directive* ParseDirectivePragma(Lexer* lexer)
@@ -466,13 +471,58 @@ Directive* ParseDriectiveFrom(Lexer* lexer)
     return newDirective;
 }
 
-void HandleIncludeDirective(Directive* directive, LexerContext* lexer) {}
+void HandleIncludeDirective(Directive* directive, LexerContext* lexer)
+{
+    DirectiveInclude* includeDirective = directive->AsDirectiveInclude();
 
-void HandleDefineDirective(Directive* directive, LexerContext* lexer, bool isFuncLike) {}
+    std::string filePath = includeDirective->GetFilePath();
+    if (Basic::fuFileExists(filePath))
+    {
+        Basic::FileViewer fileView = Basic::FileViewer(includeDirective->GetFilePath());
 
-void HandleConditionalDirective(Directive* directive, LexerContext* lexer) {}
+        if (!Lexer(&fileView, lexer).StartLexSourceCode())
+        {
+            // TODO : indicate failed to lex source code.
+        }
+    }
 
+    // TODO : indicate failed to find source code.
+}
 
+void HandleDefineDirective(Directive* directive, LexerContext* lexer, bool isFuncLike)
+{
+    std::string Key;
+    if (isFuncLike)
+    {
+        Key = directive->AsDirectiveFuncDefine()->GetName();
+    }
+    else
+    {
+        Key = directive->AsDirectiveOp2()->GetOp1();
+    }
+
+    if (lexer->LookupDefineTable(Key) != nullptr)
+    {
+        // Emit warning.
+    }
+    else
+    {
+        lexer->DefDefineExpr(Key, directive);
+    }
+}
+
+void HandleConditionalDirective(Directive* directive, LexerContext* lexer)
+{
+    switch (directive->GetType())
+    {
+        case DirectiveType::DT_ELSE:
+        case DirectiveType::DT_ELSE_IF:
+        case DirectiveType::DT_IFDEF:
+        case DirectiveType::DT_IFNDEF:
+        case DirectiveType::DT_IF:
+        case DirectiveType::DT_ENDIF:
+    }
+}
 
 } // namespace Language
 } // namespace Goto
