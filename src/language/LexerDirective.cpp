@@ -330,23 +330,33 @@ Directive* ParseDirectiveInclude(Lexer* lexer)
     std::string includePath = "";
     bool        isLocalPath = false;
 
+    TTFuncA EndFunc;
+
     // Include Directive.
     if (ttIsLessThanSym(lexer->lxGetCurrChar()))
     {
+        EndFunc = [](char c) { return ttIsGreaterThanSym(c) | ttIsNextLine(c); };
         // #include <`includePath`>
-        lexer->lxConsumeChar();
-
-        includePath = lexer->lxParseStringBeforeEnd(ttIsGreaterThanSym);
-        lexer->lxConsumeChar(); // Consume > charactor.
     }
     else if (ttIsDoubleQuote(lexer->lxGetCurrChar()))
     {
-        // #include "`includePath`"
-        lexer->lxConsumeChar();
-
         isLocalPath = true;
-        includePath = lexer->lxParseStringBeforeEnd(ttIsDoubleQuote);
-        lexer->lxConsumeChar(); // Consume " charactor.
+        EndFunc     = [](char c) { return ttIsDoubleQuote(c) | ttIsNextLine(c); };
+        // #include "`includePath`"
+    }
+
+    lexer->lxConsumeChar();
+    includePath = lexer->lxParseStringBeforeEnd(EndFunc);
+
+    // Consume " or > charactor.
+    // If \n found. indicate it.
+    if (ttIsNextLine(lexer->lxConsumeAndGetChar()))
+    {
+        // TODO : indicate unknown end of include directive.
+
+        // Returning empty include path.
+        // We are not done to parse include path.
+        return lexerContext->AllocDirectiveInclude("", isLocalPath);
     }
 
     return lexerContext->AllocDirectiveInclude(includePath, isLocalPath);
