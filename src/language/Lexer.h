@@ -31,8 +31,8 @@ public:
     size_t GetTokenCount() const;
     Token* LookupToken(size_t index);
 
-    void DirectiveIfPush(Directive* directiveIf);
-    void DirectiveIfPop();
+    void ApplyDirectiveIf(Directive* directiveIf);
+    bool IsOnDisabledIfScope();
 
     void DefDefineExpr(std::string Key, Directive* directiveDefine);
     void UndefDefineExpr(std::string Key);

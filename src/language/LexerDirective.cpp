@@ -521,18 +521,6 @@ void HandleDefineDirective(Directive* directive, LexerContext* lexer, bool isFun
     }
 }
 
-void HandleConditionalDirective(Directive* directive, LexerContext* lexer)
-{
-    switch (directive->GetType())
-    {
-        case DirectiveType::DT_ELSE:
-        case DirectiveType::DT_ELSE_IF:
-        case DirectiveType::DT_IFDEF:
-        case DirectiveType::DT_IFNDEF:
-        case DirectiveType::DT_IF:
-        case DirectiveType::DT_ENDIF:
-    }
-}
 
 } // namespace Language
 } // namespace Goto

@@ -27,14 +27,8 @@ Token* LexerContext::LookupToken(size_t index)
     return lcTokens[index];
 }
 
-void LexerContext::DirectiveIfPush(Directive* directiveIf)
+void LexerContext::ApplyDirectiveIf(Directive* directiveIf) 
 {
-    lcIfScope.emplace_back(directiveIf);
-}
-
-void LexerContext::DirectiveIfPop()
-{
-    lcIfScope.pop_back();
 }
 
 // ============================================================
@@ -246,6 +240,12 @@ bool Lexer::StartLexSourceCode()
             // We should handle preprocessor directives in here
             // Handle it from LexerDriective
             Directive* newDirective = ParseDriectiveFrom(this);
+            if (newDirective == nullptr)
+            {
+                lxApplyChange();
+                continue;
+            }
+
             noway_assert(newDirective->GetFunc() != DirectiveFunc::DF_UNKNOWN,
                          "Parsed directive function cannot be unknown!");
             noway_assert(newDirective->GetType() != DirectiveType::DT_UNKNOWN,
@@ -270,17 +270,29 @@ bool Lexer::StartLexSourceCode()
                 case DirectiveType::DT_IFDEF:
                 case DirectiveType::DT_IFNDEF:
                     // Handling all kind of conditional directive
-                    HandleConditionalDirective(newDirective, this->lxContext);
+                    lxContext->ApplyDirectiveIf(newDirective);
                     break;
 
                 case DirectiveType::DT_ERROR:
-                case DirectiveType::DT_LINE:
-                case DirectiveType::DT_PRAGMA:
-                case DirectiveType::DT_UNDEF:
+                    // TODO : internal error.
                     break;
+
+                case DirectiveType::DT_LINE:
+                    break;
+
+                case DirectiveType::DT_PRAGMA:
+                    break;
+
+                case DirectiveType::DT_UNDEF:
+                {
+                    noway_assert(newDirective->IsDirectiveOp1(), "Undef directive should be DirectiveOp1");
+                    lxContext->UndefDefineExpr(newDirective->AsDirectiveOp1()->GetOp1());
+                    break;
+                }
 
                 case DirectiveType::DT_UNKNOWN:
                 default:
+                    noway_assert(false, "Unknown directive type!");
                     break;
             }
 
