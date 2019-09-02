@@ -27,8 +27,49 @@ Token* LexerContext::LookupToken(size_t index)
     return lcTokens[index];
 }
 
-void LexerContext::ApplyDirectiveIf(Directive* directiveIf) 
+void LexerContext::ApplyDirectiveIf(Directive* directive)
 {
+    switch (directive->GetType())
+    {
+        case DirectiveType::DT_ELSE:
+        {
+            if (IsIfScopeEnabled.empty())
+            {
+                // Emit warning
+            }
+
+            if (IsIfScopeEnabled.back() == true)
+            {
+                IsIfScopeEnabled.back() = false;
+            }
+            else
+            {
+                IsIfScopeEnabled.back() = true;
+            }
+        }
+
+        case DirectiveType::DT_ELSE_IF:
+        {
+            if (IsIfScopeEnabled.empty())
+            {
+                // Emit warning
+            }
+
+            if (IsIfScopeEnabled.back() == true)
+            {
+                IsIfScopeEnabled.back() = false;
+            }
+            else
+            {
+                IsIfScopeEnabled.back() = directive->AsDirectiveIf()->IsExprTrue();
+            }
+        }
+
+        case DirectiveType::DT_ENDIF:
+        case DirectiveType::DT_IF:
+        case DirectiveType::DT_IFDEF:
+        case DirectiveType::DT_IFNDEF:
+    }
 }
 
 // ============================================================

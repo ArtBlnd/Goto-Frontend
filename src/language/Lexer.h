@@ -25,7 +25,9 @@ class LexerContext
     std::vector<Token*> lcTokens;
 
     std::vector<Directive*> lcPragmas;
-    std::vector<Directive*> lcIfScope;
+    
+
+    std::vector<bool> IsIfScopeEnabled;
 
 public:
     size_t GetTokenCount() const;
