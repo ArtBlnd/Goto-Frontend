@@ -298,7 +298,7 @@ Directive* ParseDirectiveDefine(Lexer* lexer)
                 break;
             }
 
-            // unknown charactor has been detected.
+            return nullptr;
         }
 
         // Parse expression.
@@ -501,24 +501,27 @@ void HandleIncludeDirective(Directive* directive, LexerContext* lexer)
 
 void HandleDefineDirective(Directive* directive, LexerContext* lexer, bool isFuncLike)
 {
-    std::string Key;
+    std::string Identifier;
     if (isFuncLike)
     {
-        Key = directive->AsDirectiveFuncDefine()->GetName();
+        Identifier = directive->AsDirectiveFuncDefine()->GetName();
     }
     else
     {
-        Key = directive->AsDirectiveOp2()->GetOp1();
+        // If its not a function like macro
+        // the macro will be handled as DirectiveOp2. 
+        // and that identifier of directive will be in Op1.
+        Identifier = directive->AsDirectiveOp2()->GetOp1();
     }
 
-    if (lexer->LookupDefineTable(Key) != nullptr)
+    if (lexer->LookupDefineTable(Identifier) != nullptr)
     {
-        // Emit warning.
+        // TODO : Emit warning. the Identifer already exists.
+        return;
     }
-    else
-    {
-        lexer->DefDefineExpr(Key, directive);
-    }
+
+    // Register define directive into table.
+    lexer->DefDefineExpr(Identifier, directive);
 }
 
 void HandleConditionalDirective(Directive* directive, LexerContext* lexer)
