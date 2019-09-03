@@ -33,6 +33,7 @@ void LexerContext::ApplyDirectiveIf(Directive* directive)
     {
         case DirectiveType::DT_ELSE:
         {
+            noway_assert(directive->IsDirectiveNoOp(), "Unknown DirectiveType!");
             if (IsIfScopeEnabled.empty())
             {
                 // Emit warning
@@ -46,10 +47,12 @@ void LexerContext::ApplyDirectiveIf(Directive* directive)
             {
                 IsIfScopeEnabled.back() = true;
             }
+            break;
         }
 
         case DirectiveType::DT_ELSE_IF:
         {
+            noway_assert(directive->IsDirectiveIf(), "Unknown DirectiveType!");
             if (IsIfScopeEnabled.empty())
             {
                 // Emit warning
@@ -63,12 +66,49 @@ void LexerContext::ApplyDirectiveIf(Directive* directive)
             {
                 IsIfScopeEnabled.back() = directive->AsDirectiveIf()->IsExprTrue();
             }
+            break;
         }
 
         case DirectiveType::DT_ENDIF:
+        {
+            noway_assert(directive->IsDirectiveNoOp(), "Unknown DirectiveType!");
+            if (IsIfScopeEnabled.empty())
+            {
+                // Emit Error
+            }
+
+            IsIfScopeEnabled.pop_back();
+            break;
+        }
+
         case DirectiveType::DT_IF:
+        {
+            noway_assert(directive->IsDirectiveIf(), "Unknown DirectiveType!");
+            IsIfScopeEnabled.push_back(directive->AsDirectiveIf()->IsExprTrue());
+
+            break;
+        }
+
         case DirectiveType::DT_IFDEF:
+        {
+            noway_assert(directive->IsDirectiveOp1(), "Unknown DirectiveType!");
+            bool isExists = LookupDefineTable(directive->AsDirectiveOp1()->GetOp1()) != nullptr;
+            IsIfScopeEnabled.push_back(isExists);
+
+            break;
+        }
+
         case DirectiveType::DT_IFNDEF:
+        {
+            noway_assert(directive->IsDirectiveOp1(), "Unknown DirectiveType!");
+            bool isExists = LookupDefineTable(directive->AsDirectiveOp1()->GetOp1()) != nullptr;
+            IsIfScopeEnabled.push_back(!isExists);
+
+            break;
+        }
+
+        default:
+            noway_assert(false, "Unknown DirectiveType!");
     }
 }
 
