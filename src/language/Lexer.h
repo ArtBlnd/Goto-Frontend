@@ -25,14 +25,16 @@ class LexerContext
     std::vector<Token*> lcTokens;
 
     std::vector<Directive*> lcPragmas;
-    std::vector<Directive*> lcIfScope;
+    
+
+    std::vector<bool> IsIfScopeEnabled;
 
 public:
     size_t GetTokenCount() const;
     Token* LookupToken(size_t index);
 
-    void DirectiveIfPush(Directive* directiveIf);
-    void DirectiveIfPop();
+    void ApplyDirectiveIf(Directive* directiveIf);
+    bool IsOnDisabledIfScope();
 
     void DefDefineExpr(std::string Key, Directive* directiveDefine);
     void UndefDefineExpr(std::string Key);
