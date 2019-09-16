@@ -12,7 +12,7 @@
 #define noway_assert(cond, message) assert(cond, message)
 #define debug_assert(cond, message)
 #define assert(cond, message)                                                                                          \
-    if (!cond)                                                                                                         \
+    if (!(cond))                                                                                                         \
         Goto::Debug::Assert(message)
 #endif
 
