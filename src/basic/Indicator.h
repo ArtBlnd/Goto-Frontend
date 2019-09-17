@@ -6,19 +6,10 @@ namespace Goto
 namespace Basic
 {
 
+#define TABLE_DEF(Key, Value) const std::string Key = #Value;
+#include <Basic/IndicatorTable.h>
+
 class Indicator
-{
-};
-
-class IndicatorFatal
-{
-};
-
-class IndicatorError
-{
-};
-
-class IndicatorWarning
 {
 };
 
