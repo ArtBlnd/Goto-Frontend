@@ -36,6 +36,12 @@ inline bool    ttIsMinusSym(const char c)
     return c == '-';
 }
 
+constexpr char TK_UNDERBAR = '_';
+inline bool    ttIsUnderbar(const char c) 
+{
+    return c == '_';
+}
+
 // Type : ':' (COLON)
 constexpr char TK_COLON = ':';
 inline bool    ttIsColon(const char c)
@@ -202,16 +208,16 @@ inline std::function<bool(char)> ttInverse(char token)
 }
 
 template <class Ty>
-inline std::function<bool(char)> ttFunc() 
+inline std::function<bool(char)> ttFunc()
 {
     return Ty();
 }
 
 using TTFuncTyA = bool(char);
-using TTFuncA = std::function<TTFuncTyA>;
+using TTFuncA   = std::function<TTFuncTyA>;
 
 using TTFuncTyB = bool(char, bool);
-using TTFuncB = std::function<TTFuncTyB>;
+using TTFuncB   = std::function<TTFuncTyB>;
 
 // Fast token comparer if its under 16 bytes.
 // this use normalization which is change 16 byte char array into integer and compare.
