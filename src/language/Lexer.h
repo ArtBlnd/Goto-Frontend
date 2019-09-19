@@ -4,6 +4,7 @@
 #include <functional>
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 #include <Language/LexerDirective.h>
 
@@ -29,12 +30,14 @@ class LexerContext
 
     std::vector<bool> IsIfScopeEnabled;
 
+    std::unordered_map<std::string, Directive*> lcDefineTable;
+
 public:
     size_t GetTokenCount() const;
     Token* LookupToken(size_t index);
 
     void ApplyDirectiveIf(Directive* directiveIf);
-    bool IsOnDisabledIfScope();
+    bool IsOnDisabledIfScope() const;
 
     void DefDefineExpr(std::string Key, Directive* directiveDefine);
     void UndefDefineExpr(std::string Key);
@@ -47,6 +50,13 @@ public:
     Directive* AllocDirectivePragma();
     Directive* AllocDirectiveIf(bool isExprTrue);
     Directive* AllocDirectiveInclude(std::string includePath, bool isLocal);
+
+    Token* AllocTokenUnknown(std::string unknown);
+    Token* AllocTokenLiteral(std::string literal);
+    Token* AllocTokenSymbol(std::string symbol);
+    Token* AllocTokenSymbol(char symbol);
+    Token* AllocTokenIdentifier(std::string identifier);
+    Token* AllocTokenWhiteSpace();
 };
 
 class Lexer

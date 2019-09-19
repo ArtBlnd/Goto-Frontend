@@ -112,6 +112,79 @@ void LexerContext::ApplyDirectiveIf(Directive* directive)
     }
 }
 
+bool LexerContext::IsOnDisabledIfScope() const
+{
+    return !IsIfScopeEnabled.empty() && !IsIfScopeEnabled.back();
+}
+
+void LexerContext::DefDefineExpr(std::string Key, Directive* directiveDefine)
+{
+    if (lcDefineTable.find(Key) != lcDefineTable.end())
+    {
+        // Emit warning : Already exists.
+    }
+
+    lcDefineTable[Key] = directiveDefine;
+}
+
+void LexerContext::UndefDefineExpr(std::string Key)
+{
+    if (lcDefineTable.find(Key) == lcDefineTable.end())
+    {
+        // Emit warning : Not exists.
+    }
+
+    lcDefineTable.erase(Key);
+}
+
+Directive* LexerContext::LookupDefineTable(std::string Key)
+{
+    if (lcDefineTable.find(Key) == lcDefineTable.end())
+    {
+        return nullptr;
+    }
+
+    noway_assert(lcDefineTable[Key] != nullptr, "Define table cannot hold nullptr!");
+    return lcDefineTable[Key];
+}
+
+Directive* LexerContext::AllocDirectiveNoOp(DirectiveType type)
+{
+    return nullptr;
+}
+
+Directive* LexerContext::AllocDirectiveOp1(DirectiveType type, std::string Op1)
+{
+    return nullptr;
+}
+
+Directive* LexerContext::AllocDirectiveOp2(DirectiveType type, std::string Op1, std::string Op2)
+{
+    return nullptr;
+}
+
+Directive* LexerContext::AllocDirectiveFuncDefine(std::string              DefineIdent,
+                                                  std::vector<std::string> ParamIdent,
+                                                  std::string              Expr)
+{
+    return nullptr;
+}
+
+Directive* LexerContext::AllocDirectivePragma()
+{
+    return nullptr;
+}
+
+Directive* LexerContext::AllocDirectiveIf(bool isExprTrue)
+{
+    return nullptr;
+}
+
+Directive* LexerContext::AllocDirectiveInclude(std::string includePath, bool isLocal)
+{
+    return nullptr;
+}
+
 // ============================================================
 // Lexer Implements Section
 // ============================================================
@@ -123,7 +196,7 @@ LexerContext* Lexer::GetLexerContext()
 
 bool Lexer::lxIsEOF()
 {
-    noway_assert(lxCurrIndex > lxSrcFileLen, "Index cannot be larger than source file length!");
+    noway_assert(lxCurrIndex > lxTargetFile->GetFileSize(), "Index cannot be larger than source file length!");
     return lxCurrIndex == lxTargetFile->GetFileSize();
 }
 
@@ -305,6 +378,16 @@ std::string Lexer::lxParseStringBeforeEnd(const std::function<bool(char)>& endFu
     return token;
 }
 
+bool IsStartOfIdentifier(const char c)
+{
+    return ttIsAlphabet(c) | ttIsUnderbar(c);
+}
+
+bool IsIdentifierBody(const char c)
+{
+    return ttIsAlphabet(c) | ttIsUnderbar(c) | ttIsInteger(c);
+}
+
 /* StartLexSourceCode
  *
  * Description:
@@ -314,9 +397,13 @@ std::string Lexer::lxParseStringBeforeEnd(const std::function<bool(char)>& endFu
  */
 bool Lexer::StartLexSourceCode()
 {
+    LexerContext* lexerContext = GetLexerContext();
+
     while (lxIsEOF())
     {
-        if (ttIsSharp(lxGetCurrChar()))
+        const char c = lxGetCurrChar();
+
+        if (ttIsSharp(c))
         {
             // We should handle preprocessor directives in here
             // Handle it from LexerDriective
@@ -379,6 +466,29 @@ bool Lexer::StartLexSourceCode()
 
             // We do not undo change when parsing driective.
             lxApplyChange();
+        }
+
+        if (lexerContext->IsOnDisabledIfScope())
+        {
+            // Skipping tokens if its on false condition.
+            // TODO : implements fast path of skipping.
+            continue;
+        }
+
+        Token* newToken = nullptr;
+
+        if (ttIsSemicolon(c))
+        {
+            lxConsumeChar();
+
+            newToken = lexerContext->AllocTokenSymbol(c);
+        }
+
+        if (IsStartOfIdentifier(c))
+        {
+            std::string identifier = lxParseStringBeforeEnd(ttInverse(IsIdentifierBody));
+
+            newToken = lexerContext->AllocTokenIdentifier(identifier);
         }
     }
 }
